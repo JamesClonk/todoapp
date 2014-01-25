@@ -1,0 +1,14 @@
+TBD: detail view for {{taskId}}
+
+<h1>Task: {{task}}</h1>
+
+<h1>Priority: {{task.Priority}}</h1>
+ 
+<form ng-submit="updateTask()">
+	<input type="text" ng-model="task.Todo"></input>
+
+	<br/>
+	<a href="/#/tasks">Cancel</a>
+	<input type="submit" value="Save"/>
+</form>
+

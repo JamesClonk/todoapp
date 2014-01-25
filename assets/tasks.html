@@ -1,0 +1,38 @@
+<div>Reload</div>
+
+<div>Search: <input ng-model="query"></div>
+
+<div>
+	Sort by:
+	<select ng-model="sortField">
+		<option value="Todo">Alphabetical</option>
+		<option value="Priority">Priority</option>
+	</select>
+	<select ng-model="sortOrdering">
+		<option value="">ASC</option>
+		<option value="-">DESC</option>
+	</select>
+</div>
+
+<br/>
+<br/>
+
+<form ng-submit="addTask()">
+	<input type="text" ng-model="task.Priority" size="5" placeholder="priority">
+	<input type="text" ng-model="task.Todo" size="30" placeholder="add new todo text here">
+	<input type="submit" value="Add Task">
+</form>
+
+<br/>
+
+<table border="1px">
+	<tr ng-repeat="task in tasklist | filter:query | orderBy:['Completed',sortOrdering+sortField]" ng-class="{completed: task.Completed}">
+		<td><input type="checkbox" ng-checked="task.Completed" ng-click="toggleTaskCompletion(task.Id)"></td>
+		<td>{{task.Priority}}</td>
+		<td><a href="/#/task/{{task.Id}}">{{task.Todo}}</a></td>
+	</tr>
+</table>
+
+<p>Total number of tasks: {{tasklist.length}}</p>
+
+<div>{{tasklist | json}}</div>
