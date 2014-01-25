@@ -6,7 +6,3 @@ Plan backyard herb garden @Home
 Pick up milk @GroceryStore
 Research self-publishing services @Computer +Novel
 x Download Todo.txt mobile app @Phone
-(1)
-(A) 123
-(B) ABC!
-(C) 2014-01-25 XYZ!!!!

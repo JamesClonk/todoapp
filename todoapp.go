@@ -93,7 +93,7 @@ func setupRoutes(m *martini.ClassicMartini) {
 			r.Error(http.StatusInternalServerError)
 			return
 		}
-		r.JSON(http.StatusOK, "task created!")
+		r.JSON(http.StatusOK, map[string]string{"Response": "Task created"})
 	})
 
 	m.Put("/api/task/:id", binding.Bind(todo.Task{}), func(updatedTask todo.Task, tasks todo.TaskList, params martini.Params, r render.Render) {
@@ -114,7 +114,7 @@ func setupRoutes(m *martini.ClassicMartini) {
 			r.Error(http.StatusInternalServerError)
 			return
 		}
-		r.JSON(http.StatusOK, "task updated!")
+		r.JSON(http.StatusOK, map[string]string{"Response": "Task updated"})
 	})
 
 	m.Delete("/api/task/:id", func(tasks todo.TaskList, params martini.Params, r render.Render) {
@@ -133,7 +133,7 @@ func setupRoutes(m *martini.ClassicMartini) {
 			r.Error(http.StatusInternalServerError)
 			return
 		}
-		r.JSON(http.StatusOK, "task delete!")
+		r.JSON(http.StatusOK, map[string]string{"Response": "Task deleted"})
 	})
 
 }
