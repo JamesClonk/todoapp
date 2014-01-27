@@ -1,3 +1,7 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+* License, v. 2.0. If a copy of the MPL was not distributed with this
+* file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
 package main
 
 import (
@@ -14,7 +18,7 @@ import (
 
 func init() {
 	// Port during tests
-	os.Setenv("PORT", "3003")
+	os.Setenv("PORT", "4005")
 
 	// Test file setup
 	todotxtTest := "testdata/test.txt"
@@ -43,7 +47,7 @@ func Test_todoapp_404(t *testing.T) {
 	m := setupMartini()
 
 	response := httptest.NewRecorder()
-	req, err := http.NewRequest("GET", "http://localhost:3003/unknown", nil)
+	req, err := http.NewRequest("GET", "http://localhost:4005/unknown", nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -60,7 +64,7 @@ func Test_todoapp_api_GetTasks(t *testing.T) {
 	m := setupMartini()
 
 	response := httptest.NewRecorder()
-	req, err := http.NewRequest("GET", "http://localhost:3003/api/tasks", nil)
+	req, err := http.NewRequest("GET", "http://localhost:4005/api/tasks", nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -93,7 +97,7 @@ func Test_todoapp_api_GetTask(t *testing.T) {
 	// ---------------------------------------------------------------------------
 	// get task
 	response := httptest.NewRecorder()
-	req, err := http.NewRequest("GET", "http://localhost:3003/api/task/4", nil)
+	req, err := http.NewRequest("GET", "http://localhost:4005/api/task/4", nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -123,7 +127,7 @@ func Test_todoapp_api_GetTask(t *testing.T) {
 	// ---------------------------------------------------------------------------
 	// try to get non-existing task
 	response = httptest.NewRecorder()
-	req, err = http.NewRequest("GET", "http://localhost:3003/api/task/11", nil)
+	req, err = http.NewRequest("GET", "http://localhost:4005/api/task/11", nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -156,7 +160,7 @@ func Test_todoapp_api_PostTask(t *testing.T) {
 	// ---------------------------------------------------------------------------
 	// create new task
 	response := httptest.NewRecorder()
-	req, err := http.NewRequest("POST", "http://localhost:3003/api/task", &formBuffer)
+	req, err := http.NewRequest("POST", "http://localhost:4005/api/task", &formBuffer)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -189,7 +193,7 @@ func Test_todoapp_api_PostTask(t *testing.T) {
 	// try to create invalid task
 	formBuffer.Reset()
 	response = httptest.NewRecorder()
-	req, err = http.NewRequest("POST", "http://localhost:3003/api/task", &formBuffer)
+	req, err = http.NewRequest("POST", "http://localhost:4005/api/task", &formBuffer)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -226,7 +230,7 @@ func Test_todoapp_api_PutTask(t *testing.T) {
 	// ---------------------------------------------------------------------------
 	// update existing task
 	response := httptest.NewRecorder()
-	req, err := http.NewRequest("PUT", "http://localhost:3003/api/task/6", &formBuffer)
+	req, err := http.NewRequest("PUT", "http://localhost:4005/api/task/6", &formBuffer)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -254,7 +258,7 @@ func Test_todoapp_api_PutTask(t *testing.T) {
 	formBuffer.Reset()
 	formBuffer.Write(data)
 	response = httptest.NewRecorder()
-	req, err = http.NewRequest("PUT", "http://localhost:3003/api/task/17", &formBuffer)
+	req, err = http.NewRequest("PUT", "http://localhost:4005/api/task/17", &formBuffer)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -279,7 +283,7 @@ func Test_todoapp_api_DeleteTask(t *testing.T) {
 	// ---------------------------------------------------------------------------
 	// delete existing task
 	response := httptest.NewRecorder()
-	req, err := http.NewRequest("DELETE", "http://localhost:3003/api/task/5", nil)
+	req, err := http.NewRequest("DELETE", "http://localhost:4005/api/task/5", nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -298,7 +302,7 @@ func Test_todoapp_api_DeleteTask(t *testing.T) {
 	// ---------------------------------------------------------------------------
 	// try to delete non-existing task
 	response = httptest.NewRecorder()
-	req, err = http.NewRequest("DELETE", "http://localhost:3003/api/task/15", nil)
+	req, err = http.NewRequest("DELETE", "http://localhost:4005/api/task/15", nil)
 	if err != nil {
 		t.Fatal(err)
 	}

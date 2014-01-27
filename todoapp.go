@@ -6,6 +6,7 @@ package main
 
 import (
 	todo "github.com/JamesClonk/go-todotxt"
+	"github.com/codegangsta/cli"
 	"github.com/codegangsta/martini"
 	"github.com/codegangsta/martini-contrib/auth"
 	"github.com/codegangsta/martini-contrib/binding"
@@ -23,21 +24,52 @@ var (
 	todotxtFile = "todo.txt"
 )
 
+type View struct {
+	Title string
+}
+
 func init() {
 	log.SetFlags(logFlags)
 	log.SetPrefix(logPrefix)
 }
 
 func main() {
-	// Setup and start martini
-	m := setupMartini()
-	m.Run()
+	app := cli.NewApp()
+	app.Name = "todoapp"
+	app.Usage = "A browser-based Todo.txt application"
+	app.Version = "0.1.0"
+	app.Author = "JamesClonk"
+	app.Email = "jamesclonk@jamesclonk.ch"
+	app.Action = mainAction
+	app.Flags = []cli.Flag{
+		cli.IntFlag{"port,p", 4004, "port for the todoapp web server"},
+		cli.StringFlag{"file,f", "todo.txt", "filename/path of todo.txt file to use"},
+	}
+	app.Run(os.Args)
 }
 
-func setupMartini() *martini.ClassicMartini {
-	m := martini.Classic()
-	m.Map(log.New(os.Stdout, logPrefix, logFlags))
+func mainAction(c *cli.Context) {
+	port := strconv.Itoa(c.Int("port"))
+	if c.IsSet("file") {
+		todotxtFile = c.String("file")
+	}
 
+	// check if file actually exists, otherwise abort!
+	if _, err := os.Stat(todotxtFile); os.IsNotExist(err) {
+		log.Fatalf("Todo.txt not found, no such file: [%s]", todotxtFile)
+	}
+
+	m := setupMartini()
+	log.Printf("todoapp started and listening on port %v", port)
+	http.ListenAndServe(":"+port, m)
+}
+
+func setupMartini() *martini.Martini {
+	r := martini.NewRouter()
+	m := martini.New()
+	m.Use(martini.Recovery())
+	m.Use(martini.Static("assets", martini.StaticOptions{SkipLogging: true})) // skip logging on static content
+	m.Use(martini.Logger())
 	m.Use(TaskList())
 	m.Use(render.Renderer(render.Options{
 		Directory:  "templates",
@@ -45,32 +77,29 @@ func setupMartini() *martini.ClassicMartini {
 		Extensions: []string{".html"},
 		IndentJSON: true,
 	}))
-	m.Use(martini.Static("assets"))
+	m.Map(log.New(os.Stdout, logPrefix, logFlags))
+	m.Action(r.Handle)
 
-	setupRoutes(m)
+	setupRoutes(r)
 
 	return m
 }
 
-type View struct {
-	Title string
-}
-
-func setupRoutes(m *martini.ClassicMartini) {
+func setupRoutes(r martini.Router) {
 	// static
-	m.Get("/", func(r render.Render) {
+	r.Get("/", func(r render.Render) {
 		r.HTML(http.StatusOK, "index", View{Title: "A browser-based Todo.txt application"})
 	})
-	m.NotFound(func(r render.Render) {
+	r.NotFound(func(r render.Render) {
 		r.HTML(http.StatusNotFound, "404", View{Title: "404 - Not Found"})
 	})
 
 	// api
-	m.Get("/api/tasks", func(tasks todo.TaskList, r render.Render) {
+	r.Get("/api/tasks", func(tasks todo.TaskList, r render.Render) {
 		r.JSON(http.StatusOK, tasks)
 	})
 
-	m.Get("/api/task/:id", func(tasks todo.TaskList, params martini.Params, r render.Render) {
+	r.Get("/api/task/:id", func(tasks todo.TaskList, params martini.Params, r render.Render) {
 		id, err := strconv.Atoi(params["id"])
 		if err != nil {
 			r.Error(http.StatusInternalServerError)
@@ -85,7 +114,7 @@ func setupRoutes(m *martini.ClassicMartini) {
 		r.JSON(http.StatusOK, task)
 	})
 
-	m.Post("/api/task", binding.Bind(todo.Task{}), func(newTask todo.Task, tasks todo.TaskList, params martini.Params, r render.Render) {
+	r.Post("/api/task", binding.Bind(todo.Task{}), func(newTask todo.Task, tasks todo.TaskList, params martini.Params, r render.Render) {
 		newTask.CreatedDate = time.Now()
 		tasks.AddTask(&newTask)
 
@@ -96,7 +125,7 @@ func setupRoutes(m *martini.ClassicMartini) {
 		r.JSON(http.StatusOK, map[string]string{"Response": "Task created"})
 	})
 
-	m.Put("/api/task/:id", binding.Bind(todo.Task{}), func(updatedTask todo.Task, tasks todo.TaskList, params martini.Params, r render.Render) {
+	r.Put("/api/task/:id", binding.Bind(todo.Task{}), func(updatedTask todo.Task, tasks todo.TaskList, params martini.Params, r render.Render) {
 		id, err := strconv.Atoi(params["id"])
 		if err != nil {
 			r.Error(http.StatusInternalServerError)
@@ -117,7 +146,7 @@ func setupRoutes(m *martini.ClassicMartini) {
 		r.JSON(http.StatusOK, map[string]string{"Response": "Task updated"})
 	})
 
-	m.Delete("/api/task/:id", func(tasks todo.TaskList, params martini.Params, r render.Render) {
+	r.Delete("/api/task/:id", func(tasks todo.TaskList, params martini.Params, r render.Render) {
 		id, err := strconv.Atoi(params["id"])
 		if err != nil {
 			r.Error(http.StatusInternalServerError)
@@ -135,13 +164,13 @@ func setupRoutes(m *martini.ClassicMartini) {
 		}
 		r.JSON(http.StatusOK, map[string]string{"Response": "Task deleted"})
 	})
-
 }
 
 func TodoAuth() http.HandlerFunc {
 	return auth.Basic("admin", "admin")
 }
 
+// Add todotxt.TaskList to martini context
 func TaskList() martini.Handler {
 	return func(c martini.Context) {
 		tasks, err := todo.LoadFromFilename(todotxtFile)

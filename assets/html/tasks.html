@@ -30,6 +30,7 @@
 		<td><input type="checkbox" ng-checked="task.Completed" ng-click="toggleTaskCompletion(task.Id)"></td>
 		<td>{{task.Priority}}</td>
 		<td><a href="/#/task/{{task.Id}}">{{task.Todo}}</a></td>
+		<td ng-class="styleDueDate(task.DueDate)">{{formatDueDate(task.DueDate)}}</td>
 	</tr>
 </table>
 

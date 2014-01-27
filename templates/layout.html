@@ -6,104 +6,12 @@ file, You can obtain one at http://mozilla.org/MPL/2.0/.
 <html ng-app="todoapp" ng-controller="todoappCtrl">
 <head>
 	<title>todoapp</title>
-	<script src="angular.js" type="text/javascript"></script>
-	<script src="angular-route.js" type="text/javascript"></script>
+	<script src="/js/moment.js" type="text/javascript"></script>
+	<script src="/js/angular.js" type="text/javascript"></script>
+	<script src="/js/angular-route.js" type="text/javascript"></script>
+	<script src="/js/todoapp.js" type="text/javascript"></script>
+	<link rel="stylesheet" href="/css/todoapp.css">
 </head>
-
-<style type="text/css">
-.completed, .completed a {
-	color: #333333;
-	background-color: #999999;
-	text-decoration: line-through;
-}
-</style>
-
-<script type="text/javascript">
-	// app
-	var todoapp = angular.module('todoapp', [
-		'ngRoute',
-		'todoappControllers'
-	]);
-
-	todoapp.config(['$routeProvider',
-		function($routeProvider) {
-			$routeProvider.
-				when('/tasks', {
-					templateUrl: 'tasks.html',
-					controller: 'todoappCtrl'
-				}).
-				when('/task/:taskId', {
-					templateUrl: 'task.html',
-					controller: 'todoCtrl'
-				}).
-				otherwise({
-					redirectTo: '/tasks'
-				});
-		}
-	]);
-
-	// controllers
-	var todoappControllers = angular.module('todoappControllers', []);
-
-	todoappControllers.controller('todoappCtrl', ['$scope', '$http', '$location', function ($scope, $http, $location) {
-		$scope.sortOrdering = '';
-		$scope.sortField = 'Priority';
-
-		$scope.toggleTaskCompletion = function(id) {
-			angular.forEach($scope.tasklist, function(task, key){
-				if(task.Id == id) {
-					task.Completed = !task.Completed
-				}
-			});
-		};
-
-		$scope.loadTasklist = function() {
-			$http.get('/api/tasks').success(function(data) {
-				$scope.tasklist = data;
-			});
-		};
-
-		$scope.nextTaskId = function() {
-			var maxId = 0;
-			angular.forEach($scope.tasklist, function(task) {
-				if(task.Id > maxId) {
-					maxId = task.Id;
-				}
-			});
-			return maxId + 1;
-		};
-
-		$scope.addTask = function() {
-			$http.post('/api/task', $scope.task).success(function() {
-				$scope.task.Priority = '';
-				$scope.task.Todo = '';
-
-				$scope.loadTasklist();
-    			$location.path("/tasks");
-    		});
-		};
-
-		$scope.loadTasklist();
-	}]);
-	
-	todoappControllers.controller('todoCtrl', ['$scope', '$http', '$routeParams', '$location',  function($scope, $http, $routeParams, $location) {
-		$scope.taskId = $routeParams.taskId;
-
-		$scope.loadTask = function() {
-			$http.get('/api/task/'+$scope.taskId).success(function(data) {
-				$scope.task = data;
-			});
-		};
-
-		$scope.updateTask = function updateTask() {
-    		$http.put('/api/task/'+$scope.taskId, $scope.task).success(function() {
-    			$location.path("/tasks");
-    		});
-		};
-
-		$scope.loadTask();
-	}]);
-</script>
 
 <body>
 

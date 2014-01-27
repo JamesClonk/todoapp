@@ -1,0 +1,13 @@
+.completed, .completed a {
+	color: #333333;
+	background-color: #999999;
+	text-decoration: line-through;
+}
+
+.red {
+	color: #aa0000;
+}
+
+.green {
+	color: #00aa00;
+}
