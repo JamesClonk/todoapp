@@ -1,36 +1,63 @@
-<div>Search: <input ng-model="query"></div>
+<div class="col-lg-4">
+	Search: <input type="text" class="form-control" ng-model="query">
+</div>
 
+<div class="clearfix"></div>
 <br/>
 
-<form ng-submit="addTask()">
-	<input type="text" ng-model="task.Priority" size="5" placeholder="priority">
-	<input type="text" ng-model="task.Todo" size="30" placeholder="add new todo text here">
-	<input type="submit" value="Add Task">
+<form class="form-inline" role="form" ng-submit="addTask()">
+	<div class="form-group col-lg-6">
+		<label for="quickadd-Todo" class="col-sm-2 control-label">Quick&nbsp;Add:</label>
+		<div class="col-sm-10">
+			<input type="text" class="form-control" id="quickadd-Todo" ng-model="task.Todo" size="30" placeholder="add new todo text here" required="required" autofocus="autofocus">
+		</div>
+	</div>
+	<button type="submit" class="btn btn-default"><span class="glyphicon glyphicon-plus"></span>&nbsp;&nbsp;Add Task</button>
 </form>
 
 <br/>
 
-<table border="1px">
-	<tr>
-		<th>Completed</th>
-		<th><a href="" ng-click="predicate = 'Priority'; reverse=!reverse">Priority</a></th>
-		<th><a href="" ng-click="predicate = 'Todo'; reverse=!reverse">Todo</a></th>
-		<th><a href="" ng-click="predicate = 'DueDate'; reverse=!reverse">Due Date</a></th>
-	</tr>
-	<tr ng-repeat="task in tasklist | filter:{Completed:'false'} | filter:query | orderBy:sortByPredicate:reverse">
-		<td><input type="checkbox" ng-checked="task.Completed" ng-click="toggleTaskCompletion(task)"></td>
-		<td>{{task.Priority}}</td>
-		<td><a href="/#/task/{{task.Id}}">{{task.Todo}}</a></td>
-		<td ng-class="task.DueDate | dueDateClass">{{task.DueDate | dueDateFormat}}</td>
-	</tr>
-	<tr ng-repeat="task in tasklist | filter:{Completed:'true'} | filter:query | orderBy:sortByPredicate:reverse" class="completed">
-		<td><input type="checkbox" ng-checked="task.Completed" ng-click="toggleTaskCompletion(task)"></td>
-		<td>{{task.Priority}}</td>
-		<td>{{task.Todo}}</td>
-		<td ng-class="task.DueDate | dueDateClass">{{task.DueDate | dueDateFormat}}</td>
-	</tr>
-</table>
+<div class="table-responsive">
+	<table class="table table-bordered table-hover table-condensed">
+		<thead>
+			<tr>
+				<th>Completed</th>
+				<th><a href="" ng-click="predicate = 'Priority'; reverse=!reverse">Priority</a></th>
+				<th><a href="" ng-click="predicate = 'Todo'; reverse=!reverse">Todo</a></th>
+				<th><a href="" ng-click="predicate = 'DueDate'; reverse=!reverse">Due Date</a></th>
+				<th></th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr ng-repeat="task in tasklist | filter:{Completed:'false'} | filter:query | orderBy:sortByPredicate:reverse" ng-class="{warning: dueDateClass(task.DueDate) == 'red'}">
+				<td><input type="checkbox" ng-checked="task.Completed" ng-click="toggleTaskCompletion(task)"></td>
+				<td>{{task.Priority}}</td>
+				<td><a href="/#/task/{{task.Id}}">{{task.Todo}}</a></td>
+				<td ng-class="task.DueDate | dueDateClass">{{task.DueDate | dueDateFormat}}</td>
+				<td>
+					<div class="dropdown">
+						<button class="btn btn-default btn-xs dropdown-toggle" type="button" data-toggle="dropdown">
+							<span class="caret"></span>
+						</button>
+						<ul class="dropdown-menu" role="menu">
+							<li><a role="menuitem" href="#"><span class="glyphicon glyphicon-edit"></span>&nbsp;&nbsp;Edit Task</a></li>
+							<li class="divider"></li>
+							<li><a role="menuitem" href="#"><span class="glyphicon glyphicon-remove"></span>&nbsp;&nbsp;Delete Task</a></li>
+						</ul>
+					</div>
+				</td>
+			</tr>
+			<tr ng-repeat="task in tasklist | filter:{Completed:'true'} | filter:query | orderBy:sortByPredicate:reverse" class="completed">
+				<td><input type="checkbox" ng-checked="task.Completed" ng-click="toggleTaskCompletion(task)"></td>
+				<td>{{task.Priority}}</td>
+				<td>{{task.Todo}}</td>
+				<td ng-class="task.DueDate | dueDateClass">{{task.DueDate | dueDateFormat}}</td>
+				<td><span class="glyphicon glyphicon-trash"></span></td>
+			</tr>
+		</tbody>
+	</table>
+</div>
 
-<p>Total number of tasks: {{tasklist.length}}</p>
+<p class="text-info">Total number of tasks: {{tasklist.length}}</p>
 
 <div>{{tasklist | json}}</div>

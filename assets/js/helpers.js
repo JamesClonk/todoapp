@@ -2,6 +2,36 @@
 * License, v. 2.0. If a copy of the MPL was not distributed with this
 * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+// helpers
+var dueDateClassHelper = function(date) {
+	var mdate = moment(date);
+	// too long ago, golang zero time
+	if (mdate.year() <= 1) {
+		return "";
+	}
+
+	// red
+	else if (mdate.isBefore(moment().add('days', 1))) {
+		return "red";
+	}
+	// orange
+	else if (mdate.isBefore(moment().add('days', 3))) {
+		return "orange";
+	}
+	// green
+	else if (mdate.isBefore(moment().add('days', 13))) {
+		return "green";
+	}
+	// default
+	return "gray";
+}
+
+todoapp.run(function($rootScope) {
+	$rootScope.dueDateClass = function(date) {
+		return dueDateClassHelper(date);
+	}
+});
+
 // filters
 todoapp.filter('dueDateFormat', function() {
 	moment.lang('en', {
@@ -30,7 +60,6 @@ todoapp.filter('dueDateFormat', function() {
 
 	return function(date) {
 		var mdate = moment(date).endOf('day');
-
 		// too long ago, golang zero time
 		if (mdate.year() <= 1) {
 			return "";
@@ -52,20 +81,7 @@ todoapp.filter('dueDateFormat', function() {
 
 todoapp.filter('dueDateClass', function() {
 	return function(date) {
-		var mdate = moment(date);
-		// red
-		if (mdate.isBefore(moment().add('days', 1))) {
-			return "red";
-		}
-		// orange
-		else if (mdate.isBefore(moment().add('days', 3))) {
-			return "orange";
-		}
-		// green
-		else if (mdate.isBefore(moment().add('days', 13))) {
-			return "green";
-		}
-		// default
-		return "gray";
+		return dueDateClassHelper(date);
 	}
 });
+
