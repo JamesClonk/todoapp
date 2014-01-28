@@ -70,13 +70,13 @@ func setupMartini() *martini.Martini {
 	m.Use(martini.Recovery())
 	m.Use(martini.Static("assets", martini.StaticOptions{SkipLogging: true})) // skip logging on static content
 	m.Use(martini.Logger())
-	m.Use(TaskList())
 	m.Use(render.Renderer(render.Options{
 		Directory:  "templates",
 		Layout:     "layout",
 		Extensions: []string{".html"},
 		IndentJSON: true,
 	}))
+	m.Use(TaskList())
 	m.Map(log.New(os.Stdout, logPrefix, logFlags))
 	m.Action(r.Handle)
 
@@ -172,10 +172,12 @@ func TodoAuth() http.HandlerFunc {
 
 // Add todotxt.TaskList to martini context
 func TaskList() martini.Handler {
-	return func(c martini.Context) {
+	return func(c martini.Context, r render.Render) {
 		tasks, err := todo.LoadFromFilename(todotxtFile)
 		if err != nil {
-			panic(err)
+			//panic(err)
+			r.HTML(http.StatusInternalServerError, "500", err)
+			return
 		}
 
 		c.Map(tasks)
