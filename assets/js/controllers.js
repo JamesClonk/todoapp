@@ -7,15 +7,19 @@ var todoappControllers = angular.module('todoappControllers', []);
 
 // controller for list of tasks
 todoappControllers.controller('tasklistCtrl', ['$scope', '$http', '$location', function ($scope, $http, $location) {
-	$scope.sortOrdering = '';
-	$scope.sortField = 'Priority';
+	$scope.predicate = 'Priority';
 
-	$scope.toggleTaskCompletion = function(id) {
-		angular.forEach($scope.tasklist, function(task, key){
-			if(task.Id == id) {
-				task.Completed = !task.Completed
-			}
+	$scope.toggleTaskCompletion = function(task) {
+		task.Completed = !task.Completed
+		if (task.Completed) {
+			task.CompletedDate = new Date();
+		} else {
+			task.CompletedDate = new Date(0);
+		}
+		$http.put('/api/task/'+task.Id, task).success(function() {
+			$location.path("/tasks");
 		});
+		$scope.loadTasklist();
 	};
 
 	$scope.loadTasklist = function() {
@@ -44,6 +48,26 @@ todoappControllers.controller('tasklistCtrl', ['$scope', '$http', '$location', f
 		});
 	};
 
+	// custom sort predicate function needed to deal with "empty" priorities and due dates
+	$scope.sortByPredicate = function(task) {
+		if ($scope.predicate == "DueDate") {
+			if (moment(task.DueDate).year() > 1) {
+				return moment(task.DueDate);
+			}
+			// seems far enough into the future to be on the safe side..
+			return moment("3333-01-01");
+		}
+		else if ($scope.predicate == "Priority") {
+			if (task.Priority != "") {
+				return task.Priority;
+			}
+			return "XYZ";
+		}
+		else {
+			return task[$scope.predicate];
+		}
+	}
+
 	$scope.loadTasklist();
 }]);
 
@@ -66,4 +90,3 @@ todoappControllers.controller('taskCtrl', ['$scope', '$http', '$routeParams', '$
 
 	$scope.loadTask();
 }]);
-

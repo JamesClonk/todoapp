@@ -4,11 +4,13 @@ TBD: detail view for {{taskId}}
 
 <h1>Priority: {{task.Priority}}</h1>
 
-<h1>Due Date: {{task.DueDate | dateFormatter}}</h1>
+<h1>Due Date: {{task.DueDate | dueDateFormat}}</h1>
 
  
 <form ng-submit="updateTask()">
+	<input type="text" ng-model="task.Priority"></input>
 	<input type="text" ng-model="task.Todo"></input>
+	<input type="text" ng-model="task.DueDate"></input>
 
 	<br/>
 	<a href="/#/tasks">Cancel</a>

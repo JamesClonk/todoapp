@@ -1,20 +1,5 @@
-<div>Reload</div>
-
 <div>Search: <input ng-model="query"></div>
 
-<div>
-	Sort by:
-	<select ng-model="sortField">
-		<option value="Todo">Alphabetical</option>
-		<option value="Priority">Priority</option>
-	</select>
-	<select ng-model="sortOrdering">
-		<option value="">ASC</option>
-		<option value="-">DESC</option>
-	</select>
-</div>
-
-<br/>
 <br/>
 
 <form ng-submit="addTask()">
@@ -26,10 +11,22 @@
 <br/>
 
 <table border="1px">
-	<tr ng-repeat="task in tasklist | filter:query | orderBy:['Completed',sortOrdering+sortField]" ng-class="{completed: task.Completed}">
-		<td><input type="checkbox" ng-checked="task.Completed" ng-click="toggleTaskCompletion(task.Id)"></td>
+	<tr>
+		<th>Completed</th>
+		<th><a href="" ng-click="predicate = 'Priority'; reverse=!reverse">Priority</a></th>
+		<th><a href="" ng-click="predicate = 'Todo'; reverse=!reverse">Todo</a></th>
+		<th><a href="" ng-click="predicate = 'DueDate'; reverse=!reverse">Due Date</a></th>
+	</tr>
+	<tr ng-repeat="task in tasklist | filter:{Completed:'false'} | filter:query | orderBy:sortByPredicate:reverse">
+		<td><input type="checkbox" ng-checked="task.Completed" ng-click="toggleTaskCompletion(task)"></td>
 		<td>{{task.Priority}}</td>
 		<td><a href="/#/task/{{task.Id}}">{{task.Todo}}</a></td>
+		<td ng-class="task.DueDate | dueDateClass">{{task.DueDate | dueDateFormat}}</td>
+	</tr>
+	<tr ng-repeat="task in tasklist | filter:{Completed:'true'} | filter:query | orderBy:sortByPredicate:reverse" class="completed">
+		<td><input type="checkbox" ng-checked="task.Completed" ng-click="toggleTaskCompletion(task)"></td>
+		<td>{{task.Priority}}</td>
+		<td>{{task.Todo}}</td>
 		<td ng-class="task.DueDate | dueDateClass">{{task.DueDate | dueDateFormat}}</td>
 	</tr>
 </table>
