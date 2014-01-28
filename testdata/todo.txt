@@ -2,8 +2,8 @@
 x Download Todo.txt mobile app @Phone
 (B) 2013-12-01 Outline chapter 5 @Computer +Novel Level:5 private:false due:2014-02-17
 x 2014-01-02 (B) 2013-12-30 Create golang library test cases @Go +go-todotxt
-x 2014-01-27 (A) 2012-01-30 Call Mom @Call @Phone +Family
+x 2014-01-28 (A) 2012-01-30 Call Mom @Call @Phone +Family
 (C) Add cover sheets @Office +TPSReports
 Turn off TV @Electricity @Home @Television
 Research self-publishing services +Novel due:2014-01-01
-(F) 2014-01-27 Call dry cleaner @Home due:2014-02-19
+(F) 2014-01-28 Call dry cleaner @Home due:2014-02-19
