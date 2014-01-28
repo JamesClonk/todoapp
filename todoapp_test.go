@@ -43,6 +43,57 @@ func init() {
 	}
 }
 
+func Test_todoapp_index(t *testing.T) {
+	m := setupMartini()
+
+	response := httptest.NewRecorder()
+	req, err := http.NewRequest("GET", "http://localhost:4005/", nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	m.ServeHTTP(response, req)
+	Expect(t, response.Code, http.StatusOK)
+
+	body := response.Body.String()
+	Contain(t, body, `<html lang="en" ng-app="todoapp" ng-controller="tasklistCtrl">`)
+	Contain(t, body, `<title>todoapp</title>`)
+	Contain(t, body, `<div ng-view></div>`)
+}
+
+func Test_todoapp_assets(t *testing.T) {
+	m := setupMartini()
+
+	response := httptest.NewRecorder()
+	req, err := http.NewRequest("GET", "http://localhost:4005/js/todoapp.js", nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	m.ServeHTTP(response, req)
+	Expect(t, response.Code, http.StatusOK)
+
+	body := response.Body.String()
+	Contain(t, body, `var todoapp = angular.module('todoapp', [`)
+	Contain(t, body, `todoapp.config(['$routeProvider',`)
+
+	response = httptest.NewRecorder()
+	req, err = http.NewRequest("GET", "http://localhost:4005/css/todoapp.css", nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	m.ServeHTTP(response, req)
+	Expect(t, response.Code, http.StatusOK)
+
+	body = response.Body.String()
+	Contain(t, body, `.completed, .completed a {
+	color: #333333;
+	background-color: #999999;
+	text-decoration: line-through;
+}`)
+}
+
 func Test_todoapp_404(t *testing.T) {
 	m := setupMartini()
 
@@ -58,6 +109,28 @@ func Test_todoapp_404(t *testing.T) {
 	body := response.Body.String()
 	Contain(t, body, `<h1>404 - Not Found</h1>`)
 	Contain(t, body, `<h5>This is not the page you are looking for..</h5>`)
+}
+
+func Test_todoapp_500(t *testing.T) {
+	fileBefore := todotxtFile
+	defer func() {
+		todotxtFile = fileBefore
+	}()
+	todotxtFile = "does_not_exists.txt"
+	m := setupMartini()
+
+	response := httptest.NewRecorder()
+	req, err := http.NewRequest("GET", "http://localhost:4005/", nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	m.ServeHTTP(response, req)
+	Expect(t, response.Code, http.StatusInternalServerError)
+
+	body := response.Body.String()
+	Contain(t, body, `<h1>500 - Internal Server Error</h1>`)
+	Contain(t, body, `<h5>open does_not_exists.txt: no such file or directory</h5>`)
 }
 
 func Test_todoapp_api_GetTasks(t *testing.T) {
@@ -150,7 +223,7 @@ func Test_todoapp_api_PostTask(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	data, err := json.Marshal(task)
+	data, err := json.MarshalIndent(task, "", "  ")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -166,10 +239,13 @@ func Test_todoapp_api_PostTask(t *testing.T) {
 	}
 
 	m.ServeHTTP(response, req)
-	Expect(t, response.Code, http.StatusOK)
+	Expect(t, response.Code, http.StatusCreated)
 
 	body := response.Body.String()
-	Contain(t, body, `"Response": "Task created"`)
+	Contain(t, body, task.Todo)
+	Contain(t, body, task.Priority)
+	Contain(t, body, task.Contexts[0])
+	Contain(t, body, task.DueDate.Format(todo.DateLayout))
 
 	if err := tasksFromFile.LoadFromFilename(todotxtFile); err != nil {
 		t.Fatal(err)
@@ -220,7 +296,7 @@ func Test_todoapp_api_PutTask(t *testing.T) {
 	task.Complete()
 	Expect(t, task.Completed, true)
 
-	data, err := json.Marshal(task)
+	data, err := json.MarshalIndent(task, "", "  ")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -237,9 +313,7 @@ func Test_todoapp_api_PutTask(t *testing.T) {
 
 	m.ServeHTTP(response, req)
 	Expect(t, response.Code, http.StatusOK)
-
-	body := response.Body.String()
-	Contain(t, body, `"Response": "Task updated"`)
+	Expect(t, response.Body.String(), string(data))
 
 	if err := tasksFromFile.LoadFromFilename(todotxtFile); err != nil {
 		t.Fatal(err)
@@ -264,7 +338,7 @@ func Test_todoapp_api_PutTask(t *testing.T) {
 	}
 
 	m.ServeHTTP(response, req)
-	Expect(t, response.Code, http.StatusInternalServerError)
+	Expect(t, response.Code, http.StatusNotFound)
 }
 
 func Test_todoapp_api_DeleteTask(t *testing.T) {
@@ -289,10 +363,10 @@ func Test_todoapp_api_DeleteTask(t *testing.T) {
 	}
 
 	m.ServeHTTP(response, req)
-	Expect(t, response.Code, http.StatusOK)
+	Expect(t, response.Code, http.StatusNoContent)
 
 	body := response.Body.String()
-	Contain(t, body, `"Response": "Task deleted"`)
+	Expect(t, body, `"{}"`)
 
 	if err := tasksFromFile.LoadFromFilename(todotxtFile); err != nil {
 		t.Fatal(err)
@@ -308,5 +382,5 @@ func Test_todoapp_api_DeleteTask(t *testing.T) {
 	}
 
 	m.ServeHTTP(response, req)
-	Expect(t, response.Code, http.StatusInternalServerError)
+	Expect(t, response.Code, http.StatusNotFound)
 }

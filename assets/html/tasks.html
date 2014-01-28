@@ -7,8 +7,8 @@
 
 <form class="form-inline" role="form" ng-submit="addTask()">
 	<div class="form-group col-lg-6">
-		<label for="quickadd-Todo" class="col-sm-2 control-label">Quick&nbsp;Add:</label>
-		<div class="col-sm-10">
+		<label for="quickadd-Todo" class="col-sm-3 control-label">Quick&nbsp;Add:</label>
+		<div class="col-sm-9">
 			<input type="text" class="form-control" id="quickadd-Todo" ng-model="task.Todo" size="30" placeholder="add new todo text here" required="required" autofocus="autofocus">
 		</div>
 	</div>
@@ -40,9 +40,9 @@
 							<span class="caret"></span>
 						</button>
 						<ul class="dropdown-menu" role="menu">
-							<li><a role="menuitem" href="#"><span class="glyphicon glyphicon-edit"></span>&nbsp;&nbsp;Edit Task</a></li>
+							<li><a role="menuitem" href="/#/task/{{task.Id}}"><span class="glyphicon glyphicon-edit"></span>&nbsp;&nbsp;Edit Task</a></li>
 							<li class="divider"></li>
-							<li><a role="menuitem" href="#"><span class="glyphicon glyphicon-remove"></span>&nbsp;&nbsp;Delete Task</a></li>
+							<li><a role="menuitem" ng-click="deleteTask(task)"><span class="glyphicon glyphicon-remove"></span>&nbsp;&nbsp;Delete Task</a></li>
 						</ul>
 					</div>
 				</td>
@@ -52,7 +52,7 @@
 				<td>{{task.Priority}}</td>
 				<td>{{task.Todo}}</td>
 				<td ng-class="task.DueDate | dueDateClass">{{task.DueDate | dueDateFormat}}</td>
-				<td><span class="glyphicon glyphicon-trash"></span></td>
+				<td><a role="menuitem" ng-click="deleteTask(task)"><span class="glyphicon glyphicon-trash"></span></a></td>
 			</tr>
 		</tbody>
 	</table>
@@ -60,4 +60,3 @@
 
 <p class="text-info">Total number of tasks: {{tasklist.length}}</p>
 
-<div>{{tasklist | json}}</div>

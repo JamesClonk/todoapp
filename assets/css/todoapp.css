@@ -1,3 +1,8 @@
+body {
+	padding-top: 75px;
+	padding-bottom: 40px;
+}
+
 .completed, .completed a {
 	color: #333333;
 	background-color: #999999;

@@ -122,7 +122,7 @@ func setupRoutes(r martini.Router) {
 			r.Error(http.StatusInternalServerError)
 			return
 		}
-		r.JSON(http.StatusOK, map[string]string{"Response": "Task created"})
+		r.JSON(http.StatusCreated, newTask)
 	})
 
 	r.Put("/api/task/:id", binding.Bind(todo.Task{}), func(updatedTask todo.Task, tasks todo.TaskList, params martini.Params, r render.Render) {
@@ -134,7 +134,7 @@ func setupRoutes(r martini.Router) {
 
 		currentTask, err := tasks.GetTask(id)
 		if err != nil {
-			r.Error(http.StatusInternalServerError)
+			r.Error(http.StatusNotFound)
 			return
 		}
 
@@ -143,7 +143,7 @@ func setupRoutes(r martini.Router) {
 			r.Error(http.StatusInternalServerError)
 			return
 		}
-		r.JSON(http.StatusOK, map[string]string{"Response": "Task updated"})
+		r.JSON(http.StatusOK, currentTask)
 	})
 
 	r.Delete("/api/task/:id", func(tasks todo.TaskList, params martini.Params, r render.Render) {
@@ -154,7 +154,7 @@ func setupRoutes(r martini.Router) {
 		}
 
 		if err := tasks.RemoveTaskById(id); err != nil {
-			r.Error(http.StatusInternalServerError)
+			r.Error(http.StatusNotFound)
 			return
 		}
 
@@ -162,7 +162,7 @@ func setupRoutes(r martini.Router) {
 			r.Error(http.StatusInternalServerError)
 			return
 		}
-		r.JSON(http.StatusOK, map[string]string{"Response": "Task deleted"})
+		r.JSON(http.StatusNoContent, `{}`)
 	})
 }
 
@@ -175,7 +175,6 @@ func TaskList() martini.Handler {
 	return func(c martini.Context, r render.Render) {
 		tasks, err := todo.LoadFromFilename(todotxtFile)
 		if err != nil {
-			//panic(err)
 			r.HTML(http.StatusInternalServerError, "500", err)
 			return
 		}

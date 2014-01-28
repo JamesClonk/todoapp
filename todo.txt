@@ -15,6 +15,3 @@ x 2014-01-28 (B) 2013-12-30 Create golang library test cases @Go +go-todotxt
 x 2014-01-28 (C) Add cover sheets @Office +TPSReports
 x 2014-01-28 Turn off TV @Electricity @Home @Television
 Research self-publishing services +Novel due:2014-01-28
-x 2014-01-28 (4) 2014-01-28 4
-(A) 2014-01-28 abc
-(C) 2014-01-28 5

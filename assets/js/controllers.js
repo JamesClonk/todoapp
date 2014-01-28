@@ -44,7 +44,23 @@ todoappControllers.controller('tasklistCtrl', ['$scope', '$http', '$location', f
 			$scope.task.Todo = '';
 
 			$scope.loadTasklist();
-			$location.path("/tasks");
+		});
+	};
+
+	$scope.removeTaskById =  function(taskId) {
+		for(var i=0; i<$scope.tasklist.length; i++) {
+			if($scope.tasklist[i].Id == taskId) {
+				$scope.tasklist.splice(i, 1);
+				break;
+			}
+		}
+	}
+
+	$scope.deleteTask = function(task) {
+		$http.delete('/api/task/'+task.Id).success(function() {
+			//$scope.loadTasklist();
+			// it's faster to just locally remove the task from the list, rather than reloading the entire list again
+			$scope.removeTaskById(task.Id) 
 		});
 	};
 
