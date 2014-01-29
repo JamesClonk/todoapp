@@ -37,28 +37,32 @@ file, You can obtain one at http://mozilla.org/MPL/2.0/.
 				<span class="icon-bar"></span>
 				<span class="icon-bar"></span>
 			</button>
-			<a class="navbar-brand" href="/">todoapp</a>
+			<a class="navbar-brand" ng-click="goto('/')">todoapp</a>
 		</div>
 		<div class="navbar-collapse collapse">
 			<ul class="nav navbar-nav">
-				<li ng-class="{active: ActiveTab != '/settings'}"><a href="/"><span class="glyphicon glyphicon-tasks"></span>&nbsp;&nbsp;Tasks</a></li>
+				<li ng-class="{active: ActiveTab == 'Tasks'}"><a ng-click="goto('/')"><span class="glyphicon glyphicon-tasks"></span>&nbsp;&nbsp;Tasks</a></li>
 				<li class="dropdown">
 					<a href="" class="dropdown-toggle" data-toggle="dropdown">Actions <b class="caret"></b></a>
 					<ul class="dropdown-menu">
-						<li><a role="menuitem" ng-click="reloadTasklist()"><span class="glyphicon glyphicon-refresh"></span>&nbsp;&nbsp;Reload Tasklist</a></li>
+						<li><a role="menuitem" ng-click="goto('/')"><span class="glyphicon glyphicon-refresh"></span>&nbsp;&nbsp;Reload Tasklist</a></li>
 						<li><a role="menuitem" ng-click=""><span class="glyphicon glyphicon-sort"></span>&nbsp;&nbsp;Reset sort order to default</a></li>
 						<li class="divider"></li>
 						<li><a role="menuitem" ng-click=""><span class="glyphicon glyphicon-fire"></span>&nbsp;&nbsp;Clear Tasklist (remove completed tasks)</a></li>
 					</ul>
 				</li>
-				<li ng-class="{active: ActiveTab == '/settings'}"><a href="/#/settings"><span class="glyphicon glyphicon-wrench"></span>&nbsp;&nbsp;Settings</a></li>
+				<li ng-class="{active: ActiveTab == 'Settings'}"><a ng-click="goto('/settings')"><span class="glyphicon glyphicon-wrench"></span>&nbsp;&nbsp;Settings</a></li>
 			</ul>
 		</div>
 	</div>
 </div>
 
+<div class="container" ng-controller="alertCtrl">
+	<alert ng-repeat="alert in alerts" type="alert.Type" close="closeAlert($index)">{{alert.Message}}</alert>
+</div>
+
 <div class="container">
-	{{ yield }}
+	{[{ yield }]}
 </div>
 
 </body>

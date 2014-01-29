@@ -129,7 +129,7 @@ func Test_todoapp_index(t *testing.T) {
 	Expect(t, response.Code, http.StatusOK)
 
 	body := response.Body.String()
-	Contain(t, body, `<html lang="en" ng-app="todoapp" ng-controller="tasklistCtrl">`)
+	Contain(t, body, `<html lang="en" ng-app="todoapp" ng-controller="todoappCtrl">`)
 	Contain(t, body, `<title>todoapp</title>`)
 	Contain(t, body, `<div ng-view></div>`)
 }

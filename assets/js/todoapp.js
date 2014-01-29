@@ -29,3 +29,23 @@ todoapp.config(['$routeProvider',
         });
     }
 ]);
+
+// alert service
+todoapp.factory('alertService', function() {
+    var service = {};
+
+    service.data = [];
+
+    service.addAlert = function(type, message) {
+        service.data.push({
+            Type: type,
+            Message: message
+        });
+    };
+
+    service.closeAlert = function(index) {
+        service.data.splice(index, 1);
+    };
+
+    return service;
+});

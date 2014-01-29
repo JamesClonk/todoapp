@@ -109,6 +109,7 @@ func setupMartini() *martini.Martini {
 		Directory:  "templates",
 		Layout:     "layout",
 		Extensions: []string{".html"},
+		Delims:     render.Delims{"{[{", "}]}"},
 		IndentJSON: true,
 	}))
 	m.Use(ConfigOptions(configFile))

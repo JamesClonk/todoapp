@@ -26,18 +26,11 @@ var dueDateClassHelper = function(date) {
     return "gray";
 }
 
-todoapp.run(['$rootScope', '$location',
-    function($rootScope, $location) {
+todoapp.run(['$rootScope',
+    function($rootScope) {
         $rootScope.dueDateClass = function(date) {
             return dueDateClassHelper(date);
         }
-
-        var path = function() {
-            return $location.path();
-        };
-        $rootScope.$watch(path, function(value) {
-            $rootScope.ActiveTab = value;
-        });
     }
 ]);
 

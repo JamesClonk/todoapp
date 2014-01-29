@@ -17,12 +17,7 @@
 
 <br/>
 
-<div class="alert alert-danger alert-dismissable" ng-show="ErrorActive">
-	<button type="button" class="close" ng-click="ErrorActive = false" aria-hidden="true">&times;</button>
-	<strong>Error!</strong> {{ErrorMessage}}
-</div>
-
-<div class="table-responsive">
+<div class="table-responsive tasklist">
 	<table class="table table-condensed tasklist">
 		<thead>
 			<tr>
@@ -83,5 +78,6 @@
 	</table>
 </div>
 
+<br/>
 <p class="text-info">Total number of tasks: {{tasklist.length}}</p>
 

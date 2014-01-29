@@ -6,24 +6,36 @@ var todoappControllers = angular.module('todoappControllers', []);
 
 
 // main controller
-todoappControllers.controller('todoappCtrl', ['$scope', '$http', '$location',
-    function($scope, $http, $location) {
-        $scope.reloadTasklist = function() {
-            $location.path("/");
+todoappControllers.controller('todoappCtrl', ['$scope', '$location',
+    function($scope, $location) {
+        $scope.ActiveTab = "Tasks";
+
+        $scope.goto = function(path) {
+            $scope.ActiveTab = "Tasks";
+            if (path == "/settings") {
+                $scope.ActiveTab = "Settings";
+            }
+            $location.path(path);
         };
     }
 ]);
 
 
-// controller for list of tasks
-todoappControllers.controller('tasklistCtrl', ['$scope', '$http', '$location',
-    function($scope, $http, $location) {
-        $scope.predicate = 'Priority';
+// alert controller
+todoappControllers.controller('alertCtrl', ['$scope', 'alertService',
+    function($scope, alertService) {
+        $scope.alerts = alertService.data;
 
-        $scope.showError = function(message) {
-            $scope.ErrorMessage = message;
-            $scope.ErrorActive = true;
+        $scope.closeAlert = function(index) {
+            alertService.closeAlert(index);
         };
+    }
+]);
+
+// controller for list of tasks
+todoappControllers.controller('tasklistCtrl', ['$scope', '$http', '$location', 'alertService',
+    function($scope, $http, $location, alertService) {
+        $scope.predicate = 'Priority';
 
         $scope.updateTask = function(task) {
             for (var i = 0; i < $scope.tasklist.length; i++) {
@@ -47,8 +59,8 @@ todoappControllers.controller('tasklistCtrl', ['$scope', '$http', '$location',
                 // it's faster to just locally update the task in the list, rather than reloading the entire list again
                 $scope.updateTask(task);
             }).error(function(data, status, headers, config) {
-                console.log('Task completion status could not be switched: ', data, status, headers, config)
-                $scope.showError('Task completion status could not be switched: ' + status + ']');
+                //console.log('Task completion status could not be switched: ', data, status, headers, config)
+                alertService.addAlert("danger", 'Task completion status could not be switched: ' + status + ']');
             });
         };
 
@@ -56,8 +68,8 @@ todoappControllers.controller('tasklistCtrl', ['$scope', '$http', '$location',
             $http.get('/api/tasks').success(function(data) {
                 $scope.tasklist = data;
             }).error(function(data, status, headers, config) {
-                console.log('Tasklist could not be loaded: ', data, status, headers, config)
-                $scope.showError('Tasklist could not be loaded. [HTTP Status Code: ' + status + ']');
+                //console.log('Tasklist could not be loaded: ', data, status, headers, config)
+                alertService.addAlert("danger", 'Tasklist could not be loaded. [HTTP Status Code: ' + status + ']');
             });
         };
 
@@ -81,11 +93,11 @@ todoappControllers.controller('tasklistCtrl', ['$scope', '$http', '$location',
                 if (newTask.Id != 0) {
                     $scope.tasklist.push(newTask);
                 } else {
-                    $scope.showError('Task could not be added, since API did not return a correct Task.ID');
+                    alertService.addAlert("danger", 'Task could not be added, since API did not return a correct Task.ID');
                 }
             }).error(function(data, status, headers, config) {
-                console.log('Task could not be added: ', data, status, headers, config)
-                $scope.showError('Task could not be added. [HTTP Status Code: ' + status + ']');
+                //console.log('Task could not be added: ', data, status, headers, config)
+                alertService.addAlert("danger", 'Task could not be added. [HTTP Status Code: ' + status + ']');
             });
         };
 
@@ -104,8 +116,8 @@ todoappControllers.controller('tasklistCtrl', ['$scope', '$http', '$location',
                 // it's faster to just locally remove the task from the list, rather than reloading the entire list again
                 $scope.removeTaskById(task.Id);
             }).error(function(data, status, headers, config) {
-                console.log('Task could not be deleted: ', data, status, headers, config)
-                $scope.showError('Task could not be deleted. [HTTP Status Code: ' + status + ']');
+                //console.log('Task could not be deleted: ', data, status, headers, config)
+                alertService.addAlert("danger", 'Task could not be deleted. [HTTP Status Code: ' + status + ']');
             });
         };
 
@@ -133,16 +145,16 @@ todoappControllers.controller('tasklistCtrl', ['$scope', '$http', '$location',
 
 
 // controller for single task
-todoappControllers.controller('taskCtrl', ['$scope', '$http', '$routeParams', '$location',
-    function($scope, $http, $routeParams, $location) {
+todoappControllers.controller('taskCtrl', ['$scope', '$http', '$routeParams', '$location', 'alertService',
+    function($scope, $http, $routeParams, $location, alertService) {
         $scope.taskId = $routeParams.taskId;
 
         $scope.loadTask = function() {
             $http.get('/api/task/' + $scope.taskId).success(function(data) {
                 $scope.task = data;
             }).error(function(data, status, headers, config) {
-                console.log('Task could not be loaded: ', data, status, headers, config)
-                $scope.showError('Task could not be loaded. [HTTP Status Code: ' + status + ']');
+                //console.log('Task could not be loaded: ', data, status, headers, config)
+                alertService.addAlert("danger", 'Task could not be loaded. [HTTP Status Code: ' + status + ']');
             });
         };
 
@@ -150,8 +162,8 @@ todoappControllers.controller('taskCtrl', ['$scope', '$http', '$routeParams', '$
             $http.put('/api/task/' + $scope.taskId, $scope.task).success(function() {
                 $location.path("/tasks");
             }).error(function(data, status, headers, config) {
-                console.log('Task could not be updated: ', data, status, headers, config)
-                $scope.showError('Task could not be updated. [HTTP Status Code: ' + status + ']');
+                //console.log('Task could not be updated: ', data, status, headers, config)
+                alertService.addAlert("danger", 'Task could not be updated. [HTTP Status Code: ' + status + ']');
             });
         };
 
@@ -161,6 +173,6 @@ todoappControllers.controller('taskCtrl', ['$scope', '$http', '$routeParams', '$
 
 
 // controller for settings
-todoappControllers.controller('settingsCtrl', ['$scope', '$http', '$routeParams', '$location',
-    function($scope, $http, $routeParams, $location) {}
+todoappControllers.controller('settingsCtrl', ['$scope', '$http', '$routeParams', '$location', 'alertService',
+    function($scope, $http, $routeParams, $location, alertService) {}
 ]);
