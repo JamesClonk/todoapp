@@ -5,6 +5,16 @@
 var todoappControllers = angular.module('todoappControllers', []);
 
 
+// main controller
+todoappControllers.controller('todoappCtrl', ['$scope', '$http', '$location',
+    function($scope, $http, $location) {
+        $scope.reloadTasklist = function() {
+            $location.path("/");
+        };
+    }
+]);
+
+
 // controller for list of tasks
 todoappControllers.controller('tasklistCtrl', ['$scope', '$http', '$location',
     function($scope, $http, $location) {
@@ -49,14 +59,6 @@ todoappControllers.controller('tasklistCtrl', ['$scope', '$http', '$location',
                 console.log('Tasklist could not be loaded: ', data, status, headers, config)
                 $scope.showError('Tasklist could not be loaded. [HTTP Status Code: ' + status + ']');
             });
-        };
-
-        $scope.reloadTasklist = function() {
-            // yes, I know this will call /api/tasks twice.. 
-            // for some reason angular does not update $scope.tasklist in the view, so I have to go to "/" to force a redirect/reload
-            // let it be for now..
-            $scope.loadTasklist();
-            $location.path("/");
         };
 
         $scope.nextTaskId = function() {

@@ -4,6 +4,7 @@
 
 var todoapp = angular.module('todoapp', [
     'ngRoute',
+    'ui.bootstrap',
     'todoappControllers'
 ]);
 
