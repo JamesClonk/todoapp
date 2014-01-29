@@ -25,18 +25,37 @@ func init() {
 	os.Setenv("PORT", port)
 
 	// Test file setup
-	configFile = "testdata/test.config"
+	configTest := "testdata/test.config"
+	configFile = "testdata/todo.config"
 	todotxtTest := "testdata/test.txt"
 	todotxtFile := "testdata/todo.txt"
+	os.Remove(configFile)
 	os.Remove(todotxtFile)
 
-	input, err := os.Open(todotxtTest)
+	input, err := os.Open(configTest)
 	if err != nil {
 		panic(err)
 	}
 	defer input.Close()
 
-	output, err := os.Create(todotxtFile)
+	output, err := os.Create(configFile)
+	if err != nil {
+		panic(err)
+	}
+	defer output.Close()
+
+	_, err = io.Copy(output, input)
+	if err != nil {
+		panic(err)
+	}
+
+	input, err = os.Open(todotxtTest)
+	if err != nil {
+		panic(err)
+	}
+	defer input.Close()
+
+	output, err = os.Create(todotxtFile)
 	if err != nil {
 		panic(err)
 	}
@@ -77,7 +96,7 @@ func Test_todoapp_parseOptions(t *testing.T) {
 
 	// before
 	Expect(t, port, "4005")
-	Expect(t, configFile, "testdata/test.config")
+	Expect(t, configFile, "testdata/todo.config")
 	config, err := readConfigurationFile(configFile)
 	if err != nil {
 		t.Fatal(err)
@@ -494,4 +513,86 @@ func Test_todoapp_api_DeleteTask(t *testing.T) {
 
 	m.ServeHTTP(response, req)
 	Expect(t, response.Code, http.StatusNotFound)
+}
+
+func Test_todoapp_api_GetConfig(t *testing.T) {
+	m := setupMartini()
+
+	// ---------------------------------------------------------------------------
+	// get config
+	response := httptest.NewRecorder()
+	req, err := http.NewRequest("GET", "http://localhost:4005/api/config", nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	m.ServeHTTP(response, req)
+	Expect(t, response.Code, http.StatusOK)
+
+	body := response.Body.String()
+	Contain(t, body, `"TodoTxtFilename": "testdata/todo.txt",`)
+
+	var config Config
+	if err := json.Unmarshal([]byte(body), &config); err != nil {
+		t.Fatal(err)
+	}
+	Expect(t, config.TodoTxtFilename, "testdata/todo.txt")
+	Expect(t, config.SortOrder, []string{"-DueDate", "Priority", "Todo"})
+	Expect(t, config.DeleteWarning, false)
+	Expect(t, config.ClearWarning, false)
+}
+
+func Test_todoapp_api_PutConfig(t *testing.T) {
+	m := setupMartini()
+
+	config, err := readConfigurationFile(configFile)
+	if err != nil {
+		t.Fatal(err)
+	}
+	Expect(t, config.TodoTxtFilename, "testdata/todo.txt")
+	Expect(t, config.SortOrder, []string{"-DueDate", "Priority", "Todo"})
+	Expect(t, config.DeleteWarning, false)
+	Expect(t, config.ClearWarning, false)
+
+	config.TodoTxtFilename = "junk!"
+	config.DeleteWarning = true
+	config.SortOrder = []string{"Something", "Else", "Entirely"}
+	data, err := json.MarshalIndent(config, "", "  ")
+	if err != nil {
+		t.Fatal(err)
+	}
+	var formBuffer bytes.Buffer
+	formBuffer.Write(data)
+
+	// ---------------------------------------------------------------------------
+	// update config
+	response := httptest.NewRecorder()
+	req, err := http.NewRequest("PUT", "http://localhost:4005/api/config", &formBuffer)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	m.ServeHTTP(response, req)
+	Expect(t, response.Code, http.StatusOK)
+
+	body := response.Body.String()
+	Expect(t, body, string(data))
+
+	var config1 Config
+	if err := json.Unmarshal([]byte(body), &config1); err != nil {
+		t.Fatal(err)
+	}
+	Expect(t, config1.TodoTxtFilename, "junk!")
+	Expect(t, config1.SortOrder, []string{"Something", "Else", "Entirely"})
+	Expect(t, config1.DeleteWarning, true)
+	Expect(t, config1.ClearWarning, false)
+
+	config2, err := readConfigurationFile(configFile)
+	if err != nil {
+		t.Fatal(err)
+	}
+	Expect(t, config2.TodoTxtFilename, "junk!")
+	Expect(t, config2.SortOrder, []string{"Something", "Else", "Entirely"})
+	Expect(t, config2.DeleteWarning, true)
+	Expect(t, config2.ClearWarning, false)
 }

@@ -22,6 +22,7 @@ body {
 table.tasklist {
 	width: 100%;
 	border: 0px;
+	background-color: #f9f9f6;
 }
 table.tasklist > thead > tr {
 	border: #eeeeee 1px dashed;
@@ -37,7 +38,7 @@ table.tasklist > tbody > tr > td {
 }
 
 tr:hover {
-	background-color: #efefef;
+	background-color: #e9e9e9;
 }
 .completed, .completed a {
 	color: #333333;

@@ -130,7 +130,7 @@ func setupRoutes(r martini.Router) {
 		r.HTML(http.StatusNotFound, "404", View{Title: "404 - Not Found"})
 	})
 
-	// api
+	// api - for tasks
 	r.Get("/api/tasks", func(tasks todo.TaskList, r render.Render) {
 		r.JSON(http.StatusOK, tasks)
 	})
@@ -199,6 +199,19 @@ func setupRoutes(r martini.Router) {
 			return
 		}
 		r.JSON(http.StatusNoContent, `{}`)
+	})
+
+	// api - for config file
+	r.Get("/api/config", func(config *Config, r render.Render) {
+		r.JSON(http.StatusOK, config)
+	})
+
+	r.Put("/api/config", binding.Bind(Config{}), func(bindConfig Config, r render.Render) {
+		if err := bindConfig.writeConfigurationFile(configFile); err != nil {
+			r.Error(http.StatusInternalServerError)
+			return
+		}
+		r.JSON(http.StatusOK, bindConfig)
 	})
 }
 

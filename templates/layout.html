@@ -42,7 +42,7 @@ file, You can obtain one at http://mozilla.org/MPL/2.0/.
 		</div>
 		<div class="navbar-collapse collapse">
 			<ul class="nav navbar-nav">
-				<li class="active"><a href="/"><span class="glyphicon glyphicon-tasks"></span>&nbsp;&nbsp;Tasks</a></li>
+				<li ng-class="{active: ActiveTab != '/settings'}"><a href="/"><span class="glyphicon glyphicon-tasks"></span>&nbsp;&nbsp;Tasks</a></li>
 				<li class="dropdown">
 					<a href="" class="dropdown-toggle" data-toggle="dropdown">Actions <b class="caret"></b></a>
 					<ul class="dropdown-menu">
@@ -52,7 +52,7 @@ file, You can obtain one at http://mozilla.org/MPL/2.0/.
 						<li><a role="menuitem" ng-click=""><span class="glyphicon glyphicon-fire"></span>&nbsp;&nbsp;Clear Tasklist (remove completed tasks)</a></li>
 					</ul>
 				</li>
-				<li><a href=""><span class="glyphicon glyphicon-wrench"></span>&nbsp;&nbsp;Settings</a></li>
+				<li ng-class="{active: ActiveTab == '/settings'}"><a href="/#/settings"><span class="glyphicon glyphicon-wrench"></span>&nbsp;&nbsp;Settings</a></li>
 			</ul>
 		</div>
 	</div>
