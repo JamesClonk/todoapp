@@ -7,20 +7,25 @@ package main
 import (
 	"bytes"
 	"encoding/json"
+	"flag"
 	todo "github.com/JamesClonk/go-todotxt"
+	"github.com/codegangsta/cli"
 	"io"
 	"net/http"
 	"net/http/httptest"
 	"os"
+	"runtime"
 	"testing"
 	"time"
 )
 
 func init() {
 	// Port during tests
-	os.Setenv("PORT", "4005")
+	port = "4005"
+	os.Setenv("PORT", port)
 
 	// Test file setup
+	configFile = "testdata/test.config"
 	todotxtTest := "testdata/test.txt"
 	todotxtFile = "testdata/todo.txt"
 	os.Remove(todotxtFile)
@@ -41,6 +46,46 @@ func init() {
 	if err != nil {
 		panic(err)
 	}
+}
+
+func Test_todoapp_parseOptions(t *testing.T) {
+	os.Remove("testdata/todo.test")
+	os.Remove("testdata/config.test")
+	defer os.Remove("testdata/todo.test")
+	defer os.Remove("testdata/config.test")
+
+	portBefore := port
+	todoBefore := todotxtFile
+	configBefore := configFile
+	defer func() {
+		port = portBefore
+		todotxtFile = todoBefore
+		configFile = configBefore
+	}()
+
+	set := flag.NewFlagSet("test", 0)
+	set.Int("port", 0, "test")
+	set.String("file", "", "test")
+	set.String("config", "", "test")
+	c := cli.NewContext(nil, set, set)
+
+	set.Parse([]string{"--port", "5555"})
+	set.Parse([]string{"--file", "testdata/todo.test"})
+	set.Parse([]string{"--config", "testdata/config.test"})
+
+	Expect(t, c.IsSet("port"), true)
+	Expect(t, c.IsSet("file"), true)
+	Expect(t, c.IsSet("config"), true)
+
+	Expect(t, port, "4005")
+	Expect(t, todotxtFile, "testdata/todo.txt")
+	Expect(t, configFile, "testdata/test.config")
+
+	parseOptions(c)
+
+	Expect(t, port, "5555")
+	Expect(t, todotxtFile, "testdata/todo.test")
+	Expect(t, configFile, "testdata/config.test")
 }
 
 func Test_todoapp_index(t *testing.T) {
@@ -87,11 +132,10 @@ func Test_todoapp_assets(t *testing.T) {
 	Expect(t, response.Code, http.StatusOK)
 
 	body = response.Body.String()
-	Contain(t, body, `.completed, .completed a {
-	color: #333333;
-	background-color: #999999;
-	text-decoration: line-through;
-}`)
+	Contain(t, body, `.completed, .completed a {`)
+	Contain(t, body, `color: #333333;`)
+	Contain(t, body, `background-color: #999999;`)
+	Contain(t, body, `text-decoration: line-through;`)
 }
 
 func Test_todoapp_404(t *testing.T) {
@@ -112,12 +156,23 @@ func Test_todoapp_404(t *testing.T) {
 }
 
 func Test_todoapp_500(t *testing.T) {
-	fileBefore := todotxtFile
-	defer func() {
-		todotxtFile = fileBefore
-	}()
-	todotxtFile = "does_not_exists.txt"
+	os.Remove("testdata/test_not_exists.config")
+	defer os.Remove("testdata/test_not_exists.config")
+
 	m := setupMartini()
+
+	// set todo.txt file to 'testdata/does_not_exist.txt'
+	config, err := readConfigurationFile("testdata/test_not_exists.config")
+	if err != nil {
+		t.Fatal(err)
+	}
+	config.TodoTxtFilename = "testdata/does_not_exist.txt"
+	if err := config.writeConfigurationFile("testdata/test_not_exists.config"); err != nil {
+		t.Fatal(err)
+	}
+
+	m.Use(ConfigOptions("testdata/test_not_exists.config"))
+	m.Use(TaskList())
 
 	response := httptest.NewRecorder()
 	req, err := http.NewRequest("GET", "http://localhost:4005/", nil)
@@ -130,7 +185,34 @@ func Test_todoapp_500(t *testing.T) {
 
 	body := response.Body.String()
 	Contain(t, body, `<h1>500 - Internal Server Error</h1>`)
-	Contain(t, body, `<h5>open does_not_exists.txt: no such file or directory</h5>`)
+	if runtime.GOOS == "windows" {
+		Contain(t, body, `<h5>open testdata/does_not_exist.txt: The system cannot find the file specified.</h5>`)
+	} else {
+		Contain(t, body, `<h5>open testdata/does_not_exist.txt: no such file or directory</h5>`)
+	}
+
+	// change todo.txt file to 'testdata/does_really_not_exist.txt'
+	config.TodoTxtFilename = "testdata/does_really_not_exist.txt"
+	if err := config.writeConfigurationFile("testdata/test_not_exists.config"); err != nil {
+		t.Fatal(err)
+	}
+
+	response = httptest.NewRecorder()
+	req, err = http.NewRequest("GET", "http://localhost:4005/", nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	m.ServeHTTP(response, req)
+	Expect(t, response.Code, http.StatusInternalServerError)
+
+	body = response.Body.String()
+	Contain(t, body, `<h1>500 - Internal Server Error</h1>`)
+	if runtime.GOOS == "windows" {
+		Contain(t, body, `<h5>open testdata/does_really_not_exist.txt: The system cannot find the file specified.</h5>`)
+	} else {
+		Contain(t, body, `<h5>open testdata/does_really_not_exist.txt: no such file or directory</h5>`)
+	}
 }
 
 func Test_todoapp_api_GetTasks(t *testing.T) {

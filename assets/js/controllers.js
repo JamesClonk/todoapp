@@ -106,3 +106,8 @@ todoappControllers.controller('taskCtrl', ['$scope', '$http', '$routeParams', '$
 
 	$scope.loadTask();
 }]);
+
+
+// controller for settings
+todoappControllers.controller('settingsCtrl', ['$scope', '$http', '$routeParams', '$location',  function($scope, $http, $routeParams, $location) {
+}]);

@@ -19,6 +19,10 @@ todoapp.config(['$routeProvider',
 				templateUrl: '/html/task.html',
 				controller: 'taskCtrl'
 			}).
+			when('/settings', {
+				templateUrl: '/html/settings.html',
+				controller: 'settingsCtrl'
+			}).
 			otherwise({
 				redirectTo: '/tasks'
 			});

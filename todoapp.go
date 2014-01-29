@@ -22,6 +22,8 @@ var (
 	logFlags    = log.Ldate | log.Ltime
 	logPrefix   = "[todoapp] "
 	todotxtFile = "todo.txt"
+	configFile  = "todoapp.config"
+	port        = "4004"
 )
 
 type View struct {
@@ -44,24 +46,45 @@ func main() {
 	app.Flags = []cli.Flag{
 		cli.IntFlag{"port,p", 4004, "port for the todoapp web server"},
 		cli.StringFlag{"file,f", "todo.txt", "filename/path of todo.txt file to use"},
+		cli.StringFlag{"config,c", "todoapp.config", "filename/path of configuration file to use"},
 	}
 	app.Run(os.Args)
 }
 
 func mainAction(c *cli.Context) {
-	port := strconv.Itoa(c.Int("port"))
+	parseOptions(c)
+	m := setupMartini()
+
+	log.Printf("todoapp started and listening on port %v\n", port)
+	log.Println("")
+	log.Println("------------------------------------------------------------------")
+	log.Println("")
+	log.Println("    Welcome to 'todoapp', a browser-based Todo.txt application")
+	log.Printf("    Start your browser and point it to http://localhost:%v/\n", port)
+	log.Println("")
+	log.Println("------------------------------------------------------------------")
+	log.Println("")
+
+	http.ListenAndServe(":"+port, m)
+}
+
+func parseOptions(c *cli.Context) {
+	port = strconv.Itoa(c.Int("port"))
 	if c.IsSet("file") {
 		todotxtFile = c.String("file")
 	}
-
-	// check if file actually exists, otherwise abort!
-	if _, err := os.Stat(todotxtFile); os.IsNotExist(err) {
-		log.Fatalf("Todo.txt not found, no such file: [%s]", todotxtFile)
+	if c.IsSet("config") {
+		configFile = c.String("config")
 	}
 
-	m := setupMartini()
-	log.Printf("todoapp started and listening on port %v", port)
-	http.ListenAndServe(":"+port, m)
+	// check if file actually exists, otherwise create new file
+	if _, err := os.Stat(todotxtFile); os.IsNotExist(err) {
+		file, err := os.Create(todotxtFile)
+		if err != nil {
+			log.Fatalf("Todo.txt file could not be created: %v", err)
+		}
+		file.Close()
+	}
 }
 
 func setupMartini() *martini.Martini {
@@ -76,6 +99,7 @@ func setupMartini() *martini.Martini {
 		Extensions: []string{".html"},
 		IndentJSON: true,
 	}))
+	m.Use(ConfigOptions(configFile))
 	m.Use(TaskList())
 	m.Map(log.New(os.Stdout, logPrefix, logFlags))
 	m.Action(r.Handle)
@@ -172,14 +196,28 @@ func TodoAuth() http.HandlerFunc {
 
 // Add todotxt.TaskList to martini context
 func TaskList() martini.Handler {
-	return func(c martini.Context, r render.Render) {
-		tasks, err := todo.LoadFromFilename(todotxtFile)
+	return func(c martini.Context, r render.Render, config *Config) {
+		tasks, err := todo.LoadFromFilename(config.TodoTxtFilename)
 		if err != nil {
 			r.HTML(http.StatusInternalServerError, "500", err)
 			return
 		}
 
 		c.Map(tasks)
+		c.Next()
+	}
+}
+
+// Add configuration options to martini context
+func ConfigOptions(filename string) martini.Handler {
+	return func(c martini.Context, r render.Render) {
+		config, err := readConfigurationFile(filename)
+		if err != nil {
+			r.HTML(http.StatusInternalServerError, "500", err)
+			return
+		}
+
+		c.Map(config)
 		c.Next()
 	}
 }
