@@ -79,6 +79,17 @@ todoapp.filter('dueDateFormat', function() {
 	}
 });
 
+todoapp.filter('dateFormat', function() {
+	return function(date) {
+		var mdate = moment(date).endOf('day');
+		// too long ago, golang zero time
+		if (mdate.year() <= 1) {
+			return "";
+		}
+		return mdate.format('YYYY-MM-DD');
+	}
+});
+
 todoapp.filter('dueDateClass', function() {
 	return function(date) {
 		return dueDateClassHelper(date);

@@ -37,3 +37,28 @@ func Test_config_readConfigurationFile(t *testing.T) {
 	Expect(t, config.DeleteWarning, false)
 	Expect(t, config.ClearWarning, false)
 }
+
+func Test_config_writeConfigurationFile(t *testing.T) {
+	os.Remove("testdata/config_write.test")
+	defer os.Remove("testdata/config_write.test")
+
+	if _, err := os.Stat("testdata/config_write.test"); !os.IsNotExist(err) {
+		t.Fatal("File should not exist yet! [testdata/config_write.test]")
+	}
+
+	config1 := newConfig()
+	config1.TodoTxtFilename = "testdata/write_test.txt"
+	if err := config1.writeConfigurationFile("testdata/config_write.test"); err != nil {
+		t.Fatal(err)
+	}
+
+	if _, err := os.Stat("testdata/config_write.test"); os.IsNotExist(err) {
+		t.Fatal("File should now exist! [testdata/config_write.test]")
+	}
+
+	config2, err := readConfigurationFile("testdata/config_write.test")
+	if err != nil {
+		t.Fatal(err)
+	}
+	Expect(t, config2.TodoTxtFilename, "testdata/write_test.txt")
+}

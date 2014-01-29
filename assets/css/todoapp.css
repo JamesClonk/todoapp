@@ -3,12 +3,6 @@ body {
 	padding-bottom: 40px;
 }
 
-.completed, .completed a {
-	color: #333333;
-	background-color: #999999;
-	text-decoration: line-through;
-}
-
 .red {
 	color: #aa0000;
 }
@@ -25,3 +19,108 @@ body {
 	color: #888888;
 }
 
+table.tasklist {
+	width: 100%;
+	border: 0px;
+}
+table.tasklist > thead > tr {
+	border: #eeeeee 1px dashed;
+}
+table.tasklist > tbody > tr {
+	border-bottom: #dddddd 1px solid;
+	border-left: #eeeeee 1px dashed;
+	border-right: #eeeeee 1px dashed;
+}
+table.tasklist > tbody > tr > td {
+	padding: 5px;
+	padding-bottom: 1px;
+}
+
+tr:hover {
+	background-color: #efefef;
+}
+.completed, .completed a {
+	color: #333333;
+	background-color: #999999;
+	text-decoration: line-through;
+}
+tr.completed:hover > td, tr.completed:hover > td > a {
+	background-color: #888888;
+}
+
+td.toggle {
+	width: 25px;
+}
+
+td.priority {
+	width: 24px;
+	font-size: 20px;
+	font-weight: bold;
+	color: #ffffff;
+	background-color: #cccccc;
+}
+td.priorityA {
+	background-color: #cc0000;
+}
+td.priorityB {
+	background-color: #ee9900;
+}
+td.priorityC {
+	background-color: #eeee00;
+}
+td.priorityD {
+	background-color: #3366ff;
+}
+td.priorityE {
+	background-color: #33cc33;
+}
+td.priority > a.priority {
+	font-weight: bold;
+	font-size: 20px;
+	color: #ffffff;
+}
+
+td.todo {
+	width: auto;
+	font-size: 18px;
+}
+td.todo > a.task {
+	font-weight: normal;
+	font-size: 18px;
+	color: #000000;
+	margin-right: 10px;
+}
+
+td.todo > a.project, td.todo > a.context {
+	font-weight: bold;
+	font-size: 12px;
+}
+td.todo > span.createdDate {
+	color: #aaaaaa;
+	font-size: 12px;
+}
+
+td.dueDate {
+	width: 110px;
+}
+
+td.edit {
+	width: 33px;
+}
+
+tr.completed > td {
+	text-decoration: line-through;
+}
+tr.completed > td.priority {
+	font-size: 20px;
+	font-weight: bold;
+	color: #efefef;
+	text-decoration: line-through;
+	background-color: #999999;
+}
+tr.completed:hover > td.priority {
+	background-color: #888888;
+}
+tr.completed > td > a {
+	text-decoration: line-through;
+}

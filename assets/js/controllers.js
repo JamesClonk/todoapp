@@ -9,23 +9,53 @@ var todoappControllers = angular.module('todoappControllers', []);
 todoappControllers.controller('tasklistCtrl', ['$scope', '$http', '$location', function ($scope, $http, $location) {
 	$scope.predicate = 'Priority';
 
+	$scope.showError = function(message) {
+		$scope.ErrorMessage = message;
+		$scope.ErrorActive = true;
+	};
+
+	$scope.updateTask = function(task) {
+		for(var i=0; i<$scope.tasklist.length; i++) {
+			if($scope.tasklist[i].Id == task.Id) {
+				$scope.tasklist[i] = task;
+				break;
+			}
+		}
+	}
+
 	$scope.toggleTaskCompletion = function(task) {
 		task.Completed = !task.Completed
 		if (task.Completed) {
 			task.CompletedDate = new Date();
 		} else {
-			task.CompletedDate = new Date(0);
+			task.CompletedDate = new Date("0001-01-01T00:00:00Z"); // golang zero time
 		}
+
 		$http.put('/api/task/'+task.Id, task).success(function() {
-			$location.path("/tasks");
+			//$scope.loadTasklist();
+			// it's faster to just locally update the task in the list, rather than reloading the entire list again
+			$scope.updateTask(task);
+		}).error(function (data, status, headers, config) {
+			console.log('Task completion status could not be switched: ', data, status, headers, config)
+			$scope.showError('Task completion status could not be switched: '+status+']');
 		});
-		$scope.loadTasklist();
 	};
 
 	$scope.loadTasklist = function() {
 		$http.get('/api/tasks').success(function(data) {
 			$scope.tasklist = data;
+		}).error(function (data, status, headers, config) {
+			console.log('Tasklist could not be loaded: ', data, status, headers, config)
+			$scope.showError('Tasklist could not be loaded. [HTTP Status Code: '+status+']');
 		});
+	};
+
+	$scope.reloadTasklist = function() {
+		// yes, I know this will call /api/tasks twice.. 
+		// for some reason angular does not update $scope.tasklist in the view, so I have to go to "/" to force a redirect/reload
+		// let it be for now..
+		$scope.loadTasklist();
+		$location.path("/");
 	};
 
 	$scope.nextTaskId = function() {
@@ -39,11 +69,20 @@ todoappControllers.controller('tasklistCtrl', ['$scope', '$http', '$location', f
 	};
 
 	$scope.addTask = function() {
-		$http.post('/api/task', $scope.task).success(function() {
+		$http.post('/api/task', $scope.task).success(function(newTask) {
 			$scope.task.Priority = '';
 			$scope.task.Todo = '';
 
-			$scope.loadTasklist();
+			//$scope.loadTasklist();
+			// it's faster to just locally add the new task (response from POST request) to the list, rather than reloading the entire list again
+			if (newTask.Id != 0) {
+				$scope.tasklist.push(newTask);
+			} else {
+				$scope.showError('Task could not be added, since API did not return a correct Task.ID');
+			}
+		}).error(function (data, status, headers, config) {
+			console.log('Task could not be added: ', data, status, headers, config)
+			$scope.showError('Task could not be added. [HTTP Status Code: '+status+']');
 		});
 	};
 
@@ -60,7 +99,10 @@ todoappControllers.controller('tasklistCtrl', ['$scope', '$http', '$location', f
 		$http.delete('/api/task/'+task.Id).success(function() {
 			//$scope.loadTasklist();
 			// it's faster to just locally remove the task from the list, rather than reloading the entire list again
-			$scope.removeTaskById(task.Id) 
+			$scope.removeTaskById(task.Id);
+		}).error(function (data, status, headers, config) {
+			console.log('Task could not be deleted: ', data, status, headers, config)
+			$scope.showError('Task could not be deleted. [HTTP Status Code: '+status+']');
 		});
 	};
 
@@ -71,7 +113,7 @@ todoappControllers.controller('tasklistCtrl', ['$scope', '$http', '$location', f
 				return moment(task.DueDate);
 			}
 			// seems far enough into the future to be on the safe side..
-			return moment("3333-01-01");
+			return moment("9999-01-01");
 		}
 		else if ($scope.predicate == "Priority") {
 			if (task.Priority != "") {
@@ -95,12 +137,18 @@ todoappControllers.controller('taskCtrl', ['$scope', '$http', '$routeParams', '$
 	$scope.loadTask = function() {
 		$http.get('/api/task/'+$scope.taskId).success(function(data) {
 			$scope.task = data;
+		}).error(function (data, status, headers, config) {
+			console.log('Task could not be loaded: ', data, status, headers, config)
+			$scope.showError('Task could not be loaded. [HTTP Status Code: '+status+']');
 		});
 	};
 
 	$scope.updateTask = function updateTask() {
 		$http.put('/api/task/'+$scope.taskId, $scope.task).success(function() {
 			$location.path("/tasks");
+		}).error(function (data, status, headers, config) {
+			console.log('Task could not be updated: ', data, status, headers, config)
+			$scope.showError('Task could not be updated. [HTTP Status Code: '+status+']');
 		});
 	};
 

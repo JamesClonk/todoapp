@@ -27,7 +27,7 @@ func init() {
 	// Test file setup
 	configFile = "testdata/test.config"
 	todotxtTest := "testdata/test.txt"
-	todotxtFile = "testdata/todo.txt"
+	todotxtFile := "testdata/todo.txt"
 	os.Remove(todotxtFile)
 
 	input, err := os.Open(todotxtTest)
@@ -55,11 +55,9 @@ func Test_todoapp_parseOptions(t *testing.T) {
 	defer os.Remove("testdata/config.test")
 
 	portBefore := port
-	todoBefore := todotxtFile
 	configBefore := configFile
 	defer func() {
 		port = portBefore
-		todotxtFile = todoBefore
 		configFile = configBefore
 	}()
 
@@ -77,15 +75,26 @@ func Test_todoapp_parseOptions(t *testing.T) {
 	Expect(t, c.IsSet("file"), true)
 	Expect(t, c.IsSet("config"), true)
 
+	// before
 	Expect(t, port, "4005")
-	Expect(t, todotxtFile, "testdata/todo.txt")
 	Expect(t, configFile, "testdata/test.config")
+	config, err := readConfigurationFile(configFile)
+	if err != nil {
+		t.Fatal(err)
+	}
+	Expect(t, config.TodoTxtFilename, "testdata/todo.txt")
 
 	parseOptions(c)
 
+	// after
 	Expect(t, port, "5555")
-	Expect(t, todotxtFile, "testdata/todo.test")
 	Expect(t, configFile, "testdata/config.test")
+	config, err = readConfigurationFile(configFile)
+	if err != nil {
+		t.Fatal(err)
+	}
+	Expect(t, config.TodoTxtFilename, "testdata/todo.test")
+
 }
 
 func Test_todoapp_index(t *testing.T) {
@@ -238,7 +247,11 @@ func Test_todoapp_api_GetTasks(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	tasksFromFile, err := todo.LoadFromFilename(todotxtFile)
+	config, err := readConfigurationFile(configFile)
+	if err != nil {
+		t.Fatal(err)
+	}
+	tasksFromFile, err := todo.LoadFromFilename(config.TodoTxtFilename)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -268,7 +281,11 @@ func Test_todoapp_api_GetTask(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	tasksFromFile, err := todo.LoadFromFilename(todotxtFile)
+	config, err := readConfigurationFile(configFile)
+	if err != nil {
+		t.Fatal(err)
+	}
+	tasksFromFile, err := todo.LoadFromFilename(config.TodoTxtFilename)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -288,13 +305,17 @@ func Test_todoapp_api_GetTask(t *testing.T) {
 	}
 
 	m.ServeHTTP(response, req)
-	Expect(t, response.Code, http.StatusInternalServerError)
+	Expect(t, response.Code, http.StatusNotFound)
 }
 
 func Test_todoapp_api_PostTask(t *testing.T) {
 	m := setupMartini()
 
-	tasksFromFile, err := todo.LoadFromFilename(todotxtFile)
+	config, err := readConfigurationFile(configFile)
+	if err != nil {
+		t.Fatal(err)
+	}
+	tasksFromFile, err := todo.LoadFromFilename(config.TodoTxtFilename)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -329,7 +350,7 @@ func Test_todoapp_api_PostTask(t *testing.T) {
 	Contain(t, body, task.Contexts[0])
 	Contain(t, body, task.DueDate.Format(todo.DateLayout))
 
-	if err := tasksFromFile.LoadFromFilename(todotxtFile); err != nil {
+	if err := tasksFromFile.LoadFromFilename(config.TodoTxtFilename); err != nil {
 		t.Fatal(err)
 	}
 	Expect(t, len(tasksFromFile), 10)
@@ -363,7 +384,11 @@ func Test_todoapp_api_PostTask(t *testing.T) {
 func Test_todoapp_api_PutTask(t *testing.T) {
 	m := setupMartini()
 
-	tasksFromFile, err := todo.LoadFromFilename(todotxtFile)
+	config, err := readConfigurationFile(configFile)
+	if err != nil {
+		t.Fatal(err)
+	}
+	tasksFromFile, err := todo.LoadFromFilename(config.TodoTxtFilename)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -397,7 +422,7 @@ func Test_todoapp_api_PutTask(t *testing.T) {
 	Expect(t, response.Code, http.StatusOK)
 	Expect(t, response.Body.String(), string(data))
 
-	if err := tasksFromFile.LoadFromFilename(todotxtFile); err != nil {
+	if err := tasksFromFile.LoadFromFilename(config.TodoTxtFilename); err != nil {
 		t.Fatal(err)
 	}
 	Expect(t, len(tasksFromFile), 10)
@@ -426,7 +451,11 @@ func Test_todoapp_api_PutTask(t *testing.T) {
 func Test_todoapp_api_DeleteTask(t *testing.T) {
 	m := setupMartini()
 
-	tasksFromFile, err := todo.LoadFromFilename(todotxtFile)
+	config, err := readConfigurationFile(configFile)
+	if err != nil {
+		t.Fatal(err)
+	}
+	tasksFromFile, err := todo.LoadFromFilename(config.TodoTxtFilename)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -450,7 +479,7 @@ func Test_todoapp_api_DeleteTask(t *testing.T) {
 	body := response.Body.String()
 	Expect(t, body, `"{}"`)
 
-	if err := tasksFromFile.LoadFromFilename(todotxtFile); err != nil {
+	if err := tasksFromFile.LoadFromFilename(config.TodoTxtFilename); err != nil {
 		t.Fatal(err)
 	}
 	Expect(t, len(tasksFromFile), 9)

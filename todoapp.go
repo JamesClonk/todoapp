@@ -19,20 +19,14 @@ import (
 )
 
 var (
-	logFlags    = log.Ldate | log.Ltime
-	logPrefix   = "[todoapp] "
-	todotxtFile = "todo.txt"
-	configFile  = "todoapp.config"
-	port        = "4004"
+	logFlags   = log.Ldate | log.Ltime
+	logPrefix  = "[todoapp] "
+	configFile = "todoapp.config"
+	port       = "4004"
 )
 
 type View struct {
 	Title string
-}
-
-func init() {
-	log.SetFlags(logFlags)
-	log.SetPrefix(logPrefix)
 }
 
 func main() {
@@ -55,7 +49,9 @@ func mainAction(c *cli.Context) {
 	parseOptions(c)
 	m := setupMartini()
 
-	log.Printf("todoapp started and listening on port %v\n", port)
+	log.SetFlags(0)
+	log.SetPrefix(logPrefix)
+
 	log.Println("")
 	log.Println("------------------------------------------------------------------")
 	log.Println("")
@@ -65,21 +61,37 @@ func mainAction(c *cli.Context) {
 	log.Println("------------------------------------------------------------------")
 	log.Println("")
 
+	log.SetFlags(logFlags)
+	log.SetPrefix(logPrefix)
+
+	log.Printf("todoapp started and listening on port %v\n", port)
+
 	http.ListenAndServe(":"+port, m)
 }
 
 func parseOptions(c *cli.Context) {
 	port = strconv.Itoa(c.Int("port"))
-	if c.IsSet("file") {
-		todotxtFile = c.String("file")
-	}
+
 	if c.IsSet("config") {
 		configFile = c.String("config")
 	}
+	config, err := readConfigurationFile(configFile)
+	if err != nil {
+		log.Fatalf("Could not read configuration file: %v", err)
+		return
+	}
+
+	if c.IsSet("file") {
+		// overwrite configuration file setting for todo.txt file, if given as commandline parameter
+		config.TodoTxtFilename = c.String("file")
+		if err := config.writeConfigurationFile(configFile); err != nil {
+			log.Fatalf("Could not update configuration file: %v", err)
+		}
+	}
 
 	// check if file actually exists, otherwise create new file
-	if _, err := os.Stat(todotxtFile); os.IsNotExist(err) {
-		file, err := os.Create(todotxtFile)
+	if _, err := os.Stat(config.TodoTxtFilename); os.IsNotExist(err) {
+		file, err := os.Create(config.TodoTxtFilename)
 		if err != nil {
 			log.Fatalf("Todo.txt file could not be created: %v", err)
 		}
@@ -132,24 +144,24 @@ func setupRoutes(r martini.Router) {
 
 		task, err := tasks.GetTask(id)
 		if err != nil {
-			r.Error(http.StatusInternalServerError)
+			r.Error(http.StatusNotFound)
 			return
 		}
 		r.JSON(http.StatusOK, task)
 	})
 
-	r.Post("/api/task", binding.Bind(todo.Task{}), func(newTask todo.Task, tasks todo.TaskList, params martini.Params, r render.Render) {
+	r.Post("/api/task", binding.Bind(todo.Task{}), func(newTask todo.Task, tasks todo.TaskList, config *Config, params martini.Params, r render.Render) {
 		newTask.CreatedDate = time.Now()
 		tasks.AddTask(&newTask)
 
-		if err := tasks.WriteToFilename(todotxtFile); err != nil {
+		if err := tasks.WriteToFilename(config.TodoTxtFilename); err != nil {
 			r.Error(http.StatusInternalServerError)
 			return
 		}
 		r.JSON(http.StatusCreated, newTask)
 	})
 
-	r.Put("/api/task/:id", binding.Bind(todo.Task{}), func(updatedTask todo.Task, tasks todo.TaskList, params martini.Params, r render.Render) {
+	r.Put("/api/task/:id", binding.Bind(todo.Task{}), func(updatedTask todo.Task, tasks todo.TaskList, config *Config, params martini.Params, r render.Render) {
 		id, err := strconv.Atoi(params["id"])
 		if err != nil {
 			r.Error(http.StatusInternalServerError)
@@ -163,14 +175,14 @@ func setupRoutes(r martini.Router) {
 		}
 
 		*currentTask = updatedTask
-		if err := tasks.WriteToFilename(todotxtFile); err != nil {
+		if err := tasks.WriteToFilename(config.TodoTxtFilename); err != nil {
 			r.Error(http.StatusInternalServerError)
 			return
 		}
-		r.JSON(http.StatusOK, currentTask)
+		r.JSON(http.StatusOK, updatedTask)
 	})
 
-	r.Delete("/api/task/:id", func(tasks todo.TaskList, params martini.Params, r render.Render) {
+	r.Delete("/api/task/:id", func(tasks todo.TaskList, config *Config, params martini.Params, r render.Render) {
 		id, err := strconv.Atoi(params["id"])
 		if err != nil {
 			r.Error(http.StatusInternalServerError)
@@ -182,7 +194,7 @@ func setupRoutes(r martini.Router) {
 			return
 		}
 
-		if err := tasks.WriteToFilename(todotxtFile); err != nil {
+		if err := tasks.WriteToFilename(config.TodoTxtFilename); err != nil {
 			r.Error(http.StatusInternalServerError)
 			return
 		}

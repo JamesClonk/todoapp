@@ -6,7 +6,7 @@
 <br/>
 
 <form class="form-inline" role="form" ng-submit="addTask()">
-	<div class="form-group col-lg-6">
+	<div class="form-group col-lg-8">
 		<label for="quickadd-Todo" class="col-sm-3 control-label">Quick&nbsp;Add:</label>
 		<div class="col-sm-9">
 			<input type="text" class="form-control" id="quickadd-Todo" ng-model="task.Todo" size="30" placeholder="add new todo text here" required="required" autofocus="autofocus">
@@ -17,24 +17,49 @@
 
 <br/>
 
+<div class="alert alert-danger alert-dismissable" ng-show="ErrorActive">
+	<button type="button" class="close" ng-click="ErrorActive = false" aria-hidden="true">&times;</button>
+	<strong>Error!</strong> {{ErrorMessage}}
+</div>
+
 <div class="table-responsive">
-	<table class="table table-bordered table-hover table-condensed">
+	<table class="table table-condensed tasklist">
 		<thead>
 			<tr>
-				<th>Completed</th>
-				<th><a href="" ng-click="predicate = 'Priority'; reverse=!reverse">Priority</a></th>
-				<th><a href="" ng-click="predicate = 'Todo'; reverse=!reverse">Todo</a></th>
-				<th><a href="" ng-click="predicate = 'DueDate'; reverse=!reverse">Due Date</a></th>
+				<th></th>
+				<th>
+					<a href="" ng-click="predicate = 'Priority'; reverse=!reverse">
+						<span class="glyphicon glyphicon-sort-by-attributes" ng-show="!reverse"></span>
+						<span class="glyphicon glyphicon-sort-by-attributes-alt" ng-show="reverse"></span>
+					</a>
+				</th>
+				<th>
+					<a href="" ng-click="predicate = 'Todo'; reverse=!reverse">
+						<span class="glyphicon glyphicon-sort-by-alphabet" ng-show="!reverse"></span>
+						<span class="glyphicon glyphicon-sort-by-alphabet-alt" ng-show="reverse"></span>
+						Todo
+					</a>
+				</th>
+				<th>
+					<a href="" ng-click="predicate = 'DueDate'; reverse=!reverse">
+						<span class="glyphicon glyphicon-sort-by-order" ng-show="!reverse"></span>
+						<span class="glyphicon glyphicon-sort-by-order-alt" ng-show="reverse"></span>
+						Due&nbsp;Date
+					</a>
+				</th>
 				<th></th>
 			</tr>
 		</thead>
 		<tbody>
-			<tr ng-repeat="task in tasklist | filter:{Completed:'false'} | filter:query | orderBy:sortByPredicate:reverse" ng-class="{warning: dueDateClass(task.DueDate) == 'red'}">
-				<td><input type="checkbox" ng-checked="task.Completed" ng-click="toggleTaskCompletion(task)"></td>
-				<td>{{task.Priority}}</td>
-				<td><a href="/#/task/{{task.Id}}">{{task.Todo}}</a></td>
-				<td ng-class="task.DueDate | dueDateClass">{{task.DueDate | dueDateFormat}}</td>
-				<td>
+			<tr ng-repeat="task in tasklist | filter:{Completed:'false'} | filter:query | orderBy:sortByPredicate:reverse">
+				<td class="toggle"><input type="checkbox" ng-checked="task.Completed" ng-click="toggleTaskCompletion(task)"></td>
+				<td class="priority priority{{task.Priority}}">{{task.Priority}}</td>
+				<td class="todo">
+					<a href="/#/task/{{task.Id}}" class="task">{{task.Todo}}</a>
+					<span class="createdDate">{{task.CreatedDate | dateFormat}}</span>
+				</td>
+				<td ng-class="task.DueDate | dueDateClass" class="dueDate">{{task.DueDate | dueDateFormat}}</td>
+				<td class="edit">
 					<div class="dropdown">
 						<button class="btn btn-default btn-xs dropdown-toggle" type="button" data-toggle="dropdown">
 							<span class="caret"></span>
@@ -48,11 +73,11 @@
 				</td>
 			</tr>
 			<tr ng-repeat="task in tasklist | filter:{Completed:'true'} | filter:query | orderBy:sortByPredicate:reverse" class="completed">
-				<td><input type="checkbox" ng-checked="task.Completed" ng-click="toggleTaskCompletion(task)"></td>
-				<td>{{task.Priority}}</td>
-				<td>{{task.Todo}}</td>
+				<td class="toggle"><input type="checkbox" ng-checked="task.Completed" ng-click="toggleTaskCompletion(task)"></td>
+				<td class="priority">{{task.Priority}}</td>
+				<td class="todo">{{task.Todo}}</td>
 				<td ng-class="task.DueDate | dueDateClass">{{task.DueDate | dueDateFormat}}</td>
-				<td><a role="menuitem" ng-click="deleteTask(task)"><span class="glyphicon glyphicon-trash"></span></a></td>
+				<td class="edit"><a role="menuitem" ng-click="deleteTask(task)"><span class="glyphicon glyphicon-trash"></span></a></td>
 			</tr>
 		</tbody>
 	</table>
