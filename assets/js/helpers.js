@@ -26,16 +26,23 @@ var dueDateClassHelper = function(date) {
     return "gray";
 }
 
-todoapp.run(['$rootScope',
-    function($rootScope) {
-        $rootScope.dueDateClass = function(date) {
+todoapp.run(['$rootScope', 'API',
+    function($rootScope, API) {
+        $rootScope.DueDateClass = function(date) {
             return dueDateClassHelper(date);
         }
+
+        $rootScope.ReloadTasklist = function() {
+            API.LoadTasklist();
+        }
+
+        // load tasklist upon todoapp initialization..
+        API.LoadTasklist();
     }
 ]);
 
 // filters
-todoapp.filter('dueDateFormat', function() {
+todoapp.filter('DueDateFormatFilter', function() {
     moment.lang('en', {
         relativeTime: {
             future: "in %s",
@@ -79,7 +86,7 @@ todoapp.filter('dueDateFormat', function() {
     }
 });
 
-todoapp.filter('dateFormat', function() {
+todoapp.filter('DateFormatFilter', function() {
     return function(date) {
         var mdate = moment(date).endOf('day');
         // too long ago, golang zero time
@@ -90,7 +97,7 @@ todoapp.filter('dateFormat', function() {
     }
 });
 
-todoapp.filter('dueDateClass', function() {
+todoapp.filter('DueDateClassFilter', function() {
     return function(date) {
         return dueDateClassHelper(date);
     }
