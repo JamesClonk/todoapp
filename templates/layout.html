@@ -40,19 +40,22 @@ file, You can obtain one at http://mozilla.org/MPL/2.0/.
 				<span class="icon-bar"></span>
 				<span class="icon-bar"></span>
 			</button>
-			<a class="navbar-brand" ng-click="goto('/')">todoapp</a>
+			<a class="navbar-brand" ng-click="Goto('/')">todoapp</a>
 		</div>
 
-		<div class="navbar-collapse collapse" ng-class="!navCollapsed && 'in'" id="navbar-collapse">
+		<div class="navbar-collapse collapse" ng-class="!navCollapsed && 'in'" id="navbar-collapse" ng-controller="navbarCtrl">
 			<ul class="nav navbar-nav">
-				<li ng-class="{active: ActiveTab == 'Tasks'}" class="dropdown">
-					<a href="" class="dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-tasks"></span>&nbsp;&nbsp;Tasks&nbsp;<b class="caret"></b></a>
-					<ul class="dropdown-menu" ng-controller="tasklistCtrl">
-						<li class="dropdown-header">Contexts</li>
-						<li ng-repeat="task in tasklist"><a role="menuitem" ng-click="">{{task.Priority}}</a></li>
+				<li ng-class="{active: ActiveTab.Active == 'Tasks'}" class="dropdown">
+					<a href="" class="dropdown-toggle" data-toggle="dropdown" ng-click="LoadBadges()"><span class="glyphicon glyphicon-tasks"></span>&nbsp;&nbsp;Tasks&nbsp;<b class="caret"></b></a>
+					<ul class="dropdown-menu">
+						<li class="dropdown-header">Tasks</li>
+						<li><a role="menuitem" ng-click="ResetFilterGroup()"><span class="badge">{{count}}</span>&nbsp;&nbsp;All</a></li>
 						<li class="divider"></li>
-						<li class="dropdown-header">Projects</li>
-						<li><a role="menuitem" ng-click=""></a></li>
+						<li class="dropdown-header"><span class="badge">{{contexts.length}}</span>&nbsp;&nbsp;Contexts</li>
+						<li ng-repeat="(context, count) in contexts"><a role="menuitem" ng-click="SetFilterGroup('Context',context)"><span class="badge">{{count}}</span>&nbsp;&nbsp;{{context}}</a></li>
+						<li class="divider"></li>
+						<li class="dropdown-header"><span class="badge">{{projects.length}}</span>&nbsp;&nbsp;Projects</li>
+						<li ng-repeat="(project, count) in projects"><a role="menuitem" ng-click="SetFilterGroup('Project',project)"><span class="badge">{{count}}</span>&nbsp;&nbsp;{{project}}</a></li>
 					</ul>
 				</li>
 				<li class="dropdown">
@@ -66,15 +69,15 @@ file, You can obtain one at http://mozilla.org/MPL/2.0/.
 				</li>
 			</ul>
 
-			<form class="navbar-form navbar-left" role="search" ng-submit="goto('/tasks')">
+			<form class="navbar-form navbar-left" role="search" ng-submit="Goto('/tasks')">
 				<div class="form-group">
-					<input type="text" class="form-control" placeholder="Filter tasklist.." ng-model="query">
+					<input type="text" class="form-control" placeholder="Filter tasklist.." ng-model="query" ng-change="UpdateQuery()">
 				</div>
-				<button type="reset" class="btn btn-default" ng-click="query = ''">Clear</button>
+				<button type="reset" class="btn btn-default" ng-click="query = ''; UpdateQuery()">Clear</button>
 			</form>
 
 			<ul class="nav navbar-nav navbar-right">
-				<li ng-class="{active: ActiveTab == 'Settings'}"><a ng-click="goto('/settings')"><span class="glyphicon glyphicon-wrench"></span>&nbsp;&nbsp;Settings</a></li>
+				<li ng-class="{active: ActiveTab.Active == 'Settings'}"><a ng-click="Goto('/settings')"><span class="glyphicon glyphicon-wrench"></span>&nbsp;&nbsp;Settings</a></li>
 			</ul>
 		</div>
 

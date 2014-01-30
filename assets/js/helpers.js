@@ -26,18 +26,32 @@ var dueDateClassHelper = function(date) {
     return "gray";
 }
 
-todoapp.run(['$rootScope', 'API',
-    function($rootScope, API) {
+todoapp.run(['$rootScope', '$location', 'API', 'DataStore',
+    function($rootScope, $location, API, DataStore) {
         $rootScope.DueDateClass = function(date) {
             return dueDateClassHelper(date);
         }
 
-        $rootScope.ReloadTasklist = function() {
-            API.LoadTasklist();
-        }
+        $rootScope.SetFilterGroup = function(type, group) {
+            if (type == "Context") {
+                DataStore.filtergroup = {
+                    "Context": group
+                };
+            } else if (type == "Project") {
+                DataStore.filtergroup = {
+                    "Project": group
+                };
+            } else {
+                $scope.ResetFilterGroup();
+                return;
+            }
+            DataStore.Goto("/tasks");
+        };
 
         // load tasklist upon todoapp initialization..
-        API.LoadTasklist();
+        API.LoadTasklist(function() {
+            $location.path("/tasks");
+        });
     }
 ]);
 
@@ -102,3 +116,48 @@ todoapp.filter('DueDateClassFilter', function() {
         return dueDateClassHelper(date);
     }
 });
+
+todoapp.filter('GroupFilter', ['DataStore',
+    function(DataStore) {
+        function isEmpty(map) {
+            var empty = true;
+            for (var key in map) {
+                empty = false;
+                break;
+            }
+            return empty;
+        }
+
+        return function(tasklist) {
+            if (DataStore.filtergroup == null) {
+                return tasklist;
+            } else {
+                var tasks = [];
+                if (DataStore.filtergroup["Context"] != null) {
+                    for (var t = 0; t < tasklist.length; t++) {
+                        if (tasklist[t].Contexts != null) {
+                            for (var c = 0; c < tasklist[t].Contexts.length; c++) {
+                                if (tasklist[t].Contexts[c] == DataStore.filtergroup["Context"]) {
+                                    tasks.push(tasklist[t]);
+                                }
+                            }
+                        }
+                    }
+                    return tasks;
+                }
+                if (DataStore.filtergroup["Project"] != null) {
+                    for (var t = 0; t < tasklist.length; t++) {
+                        if (tasklist[t].Projects != null) {
+                            for (var c = 0; c < tasklist[t].Projects.length; c++) {
+                                if (tasklist[t].Projects[c] == DataStore.filtergroup["Project"]) {
+                                    tasks.push(tasklist[t]);
+                                }
+                            }
+                        }
+                    }
+                }
+                return tasks;
+            }
+        };
+    }
+]);

@@ -1,8 +1,8 @@
 (A) 2013-02-22 Pick up milk! @GroceryStore
 Download Todo.txt mobile app @Phone
 (B) 2013-12-01 Outline chapter 5 @Computer +Novel Level:5 private:false due:2014-02-17
-x 2014-01-29 (B) 2013-12-30 Create golang library test cases @Go +go-todotxt
-(C) 2014-01-01 Create golang library documentation @Go +go-todotxt due:2014-02-10
+(B) 2013-12-30 Create golang library test cases @Go +go-todotxt
+x 2014-01-30 (C) 2014-01-01 Create golang library documentation @Go +go-todotxt due:2014-02-10
 (C) 2014-01-01 Create golang library documentation @Go +go-todotxt due:2014-02-04
 (C) tomorrow due:2014-01-29
 (C) yesterday due:2014-01-27
@@ -13,5 +13,5 @@ x 2014-01-29 (B) 2013-12-30 Create golang library test cases @Go +go-todotxt
 (C) in 4 days due:2014-02-01
 (A) 2012-01-30 Call Mom @Call @Phone +Family
 (E) Add cover sheets @Office +TPSReports
-x 2014-01-29 (F) Research self-publishing services +Novel due:2014-01-28
-(F) Research self-publishing services +Novel due:2013-03-01
+(F) Research self-publishing services +Novel due:2014-01-28
+x 2014-01-30 (F) Research self-publishing services +Novel due:2013-03-01

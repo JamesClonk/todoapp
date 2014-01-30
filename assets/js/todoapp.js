@@ -31,7 +31,7 @@ todoapp.config(['$routeProvider',
 ]);
 
 // alert service
-todoapp.factory('alertService', function() {
+todoapp.factory('Alerts', function() {
     var service = {};
 
     service.alerts = [];
@@ -50,19 +50,91 @@ todoapp.factory('alertService', function() {
     return service;
 });
 
+// data sharing service
+todoapp.factory('DataStore', ['$location',
+    function($location) {
+        var service = {};
+
+        service.contexts = {};
+        service.projects = {};
+        service.filtergroup = null;
+        service.query = {
+            "Query": ""
+        };
+        service.tab = {
+            "Active": "Tasks"
+        }
+
+        service.Goto = function(path) {
+            service.UpdateTab(path);
+            $location.path(path);
+        };
+
+        service.UpdateQuery = function(query) {
+            service.query.Query = query;
+        };
+
+        service.UpdateTab = function(path) {
+            service.tab.Active = "Tasks";
+            if (path == "/settings") {
+                service.tab.Active = "Settings";
+            }
+        };
+
+        service.LoadBadges = function(tasklist) {
+            var contexts = {};
+            var projects = {};
+            for (var i = 0; i < tasklist.length; i++) {
+                if (tasklist[i].Contexts != null) {
+                    for (var c = 0; c < tasklist[i].Contexts.length; c++) {
+                        if (contexts[tasklist[i].Contexts[c]] == null) {
+                            contexts[tasklist[i].Contexts[c]] = 0;
+                        }
+                        contexts[tasklist[i].Contexts[c]] += 1;
+                    }
+                }
+                if (tasklist[i].Projects != null) {
+                    for (var p = 0; p < tasklist[i].Projects.length; p++) {
+                        if (projects[tasklist[i].Projects[p]] == null) {
+                            projects[tasklist[i].Projects[p]] = 0;
+                        }
+                        projects[tasklist[i].Projects[p]] += 1;
+                    }
+                }
+            }
+            service.contexts = contexts;
+            service.projects = projects;
+        };
+
+        service.SetFilterGroup = function(type, group) {
+            service.filtergroup = {};
+            if (type != null && type == "Context") {
+                service.filtergroup["Context"] = group;
+            } else if (type != null && type == "Project") {
+                service.filtergroup["Project"] = group;
+            } else {
+                service.filtergroup = null;
+            }
+        };
+
+        return service;
+    }
+]);
+
 // tasklist / API service
-todoapp.factory('API', ['$http', 'alertService',
-    function($http, alertService) {
+todoapp.factory('API', ['$http', 'Alerts',
+    function($http, Alerts) {
         var service = {};
 
         service.tasklist = [];
         service.task = null;
 
-        service.LoadTasklist = function() {
+        service.LoadTasklist = function(callback) {
             $http.get('/api/tasks').success(function(data) {
                 service.tasklist = data;
+                callback();
             }).error(function(data, status, headers, config) {
-                alertService.addAlert("danger", 'Tasklist could not be loaded. [HTTP Status Code: ' + status + ']');
+                Alerts.addAlert("danger", 'Tasklist could not be loaded. [HTTP Status Code: ' + status + ']');
             });
         };
 
@@ -81,7 +153,7 @@ todoapp.factory('API', ['$http', 'alertService',
                 service.task = task;
             }).error(function(data, status, headers, config) {
                 service.task = null;
-                alertService.addAlert("danger", 'Task could not be loaded. [HTTP Status Code: ' + status + ']');
+                Alerts.addAlert("danger", 'Task could not be loaded. [HTTP Status Code: ' + status + ']');
             });
         };
 
@@ -90,10 +162,10 @@ todoapp.factory('API', ['$http', 'alertService',
                 if (newTask.Id != 0) {
                     service.tasklist.push(newTask);
                 } else {
-                    alertService.addAlert("danger", 'Task could not be added, since API did not return a correct Task.ID');
+                    Alerts.addAlert("danger", 'Task could not be added, since API did not return a correct Task.ID');
                 }
             }).error(function(data, status, headers, config) {
-                alertService.addAlert("danger", 'Task could not be added. [HTTP Status Code: ' + status + ']');
+                Alerts.addAlert("danger", 'Task could not be added. [HTTP Status Code: ' + status + ']');
             });
         };
 
@@ -108,7 +180,7 @@ todoapp.factory('API', ['$http', 'alertService',
             $http.put('/api/task/' + task.Id, task).success(function() {
                 service.modifyTask(task);
             }).error(function(data, status, headers, config) {
-                alertService.addAlert("danger", 'Task completion status could not be switched: ' + status + ']');
+                Alerts.addAlert("danger", 'Task completion status could not be switched: ' + status + ']');
             });
         };
 
@@ -121,12 +193,12 @@ todoapp.factory('API', ['$http', 'alertService',
             }
         };
 
-        service.UpdateTask = function(task, cb) {
+        service.UpdateTask = function(task, callback) {
             $http.put('/api/task/' + task.Id, task).success(function() {
                 service.modifyTask(task);
-                cb;
+                callback();
             }).error(function(data, status, headers, config) {
-                alertService.addAlert("danger", 'Task could not be updated. [HTTP Status Code: ' + status + ']');
+                Alerts.addAlert("danger", 'Task could not be updated. [HTTP Status Code: ' + status + ']');
             });
         };
 
@@ -143,7 +215,7 @@ todoapp.factory('API', ['$http', 'alertService',
             $http.delete('/api/task/' + task.Id).success(function() {
                 service.removeTaskById(task.Id);
             }).error(function(data, status, headers, config) {
-                alertService.addAlert("danger", 'Task could not be deleted. [HTTP Status Code: ' + status + ']');
+                Alerts.addAlert("danger", 'Task could not be deleted. [HTTP Status Code: ' + status + ']');
             });
         };
 

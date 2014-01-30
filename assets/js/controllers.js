@@ -6,44 +6,65 @@ var todoappControllers = angular.module('todoappControllers', []);
 
 
 // main controller
-todoappControllers.controller('todoappCtrl', ['$scope', '$location',
-    function($scope, $location) {
-        $scope.ActiveTab = "Tasks";
-
-        $scope.goto = function(path) {
-            $scope.ActiveTab = "Tasks";
-            if (path == "/settings") {
-                $scope.ActiveTab = "Settings";
-            }
-            $location.path(path);
+todoappControllers.controller('todoappCtrl', ['$scope', '$location', 'DataStore',
+    function($scope, $location, DataStore) {
+        $scope.Goto = function(path) {
+            DataStore.Goto(path);
         };
     }
 ]);
 
 
 // alert controller
-todoappControllers.controller('alertCtrl', ['$scope', 'alertService',
-    function($scope, alertService) {
-        $scope.alerts = alertService.alerts;
+todoappControllers.controller('alertCtrl', ['$scope', 'Alerts',
+    function($scope, Alerts) {
+        $scope.alerts = Alerts.alerts;
 
         $scope.CloseAlert = function(index) {
-            alertService.CloseAlert(index);
+            Alerts.CloseAlert(index);
         };
     }
 ]);
 
-// contexts & projects controller for navbar
-todoappControllers.controller('navbarCtrl', ['$scope', 'tasklistService',
-    function($scope, tasklistService) {
+// controller for navbar
+todoappControllers.controller('navbarCtrl', ['$scope', 'API', 'DataStore',
+    function($scope, API, DataStore) {
+        $scope.count = API.tasklist.length;
+        $scope.contexts = DataStore.contexts;
+        $scope.projects = DataStore.projects;
+        $scope.query = "";
+        $scope.ActiveTab = DataStore.tab;
 
+        $scope.UpdateQuery = function() {
+            DataStore.UpdateQuery($scope.query);
+        }
+
+        $scope.LoadBadges = function() {
+            DataStore.LoadBadges(API.tasklist);
+            $scope.count = API.tasklist.length;
+            $scope.contexts = DataStore.contexts;
+            $scope.projects = DataStore.projects;
+        };
+
+        $scope.ResetFilterGroup = function(group) {
+            DataStore.filtergroup = null;
+            DataStore.Goto("/tasks");
+        };
+
+        $scope.ReloadTasklist = function() {
+            API.LoadTasklist(function() {
+                DataStore.Goto("/"); // causes a redirect and forces view to update
+            });
+        };
     }
 ]);
 
 // controller for list of tasks
-todoappControllers.controller('tasklistCtrl', ['$scope', '$http', '$location', 'alertService', 'API',
-    function($scope, $http, $location, alertService, API) {
+todoappControllers.controller('tasklistCtrl', ['$scope', '$http', '$location', 'Alerts', 'API', 'DataStore',
+    function($scope, $http, $location, Alerts, API, DataStore) {
         $scope.predicate = 'Priority';
         $scope.tasklist = API.tasklist;
+        $scope.query = DataStore.query;
 
         $scope.ToggleTaskCompletion = function(task) {
             API.ToggleTaskCompletion(task);
@@ -83,8 +104,8 @@ todoappControllers.controller('tasklistCtrl', ['$scope', '$http', '$location', '
 
 
 // controller for single task
-todoappControllers.controller('taskCtrl', ['$scope', '$http', '$routeParams', '$location', 'alertService', 'API',
-    function($scope, $http, $routeParams, $location, alertService, API) {
+todoappControllers.controller('taskCtrl', ['$scope', '$http', '$routeParams', '$location', 'Alerts', 'API',
+    function($scope, $http, $routeParams, $location, Alerts, API) {
         $scope.taskId = $routeParams.taskId;
 
         $scope.loadTask = function() {
@@ -92,7 +113,9 @@ todoappControllers.controller('taskCtrl', ['$scope', '$http', '$routeParams', '$
         };
 
         $scope.UpdateTask = function() {
-            API.UpdateTask($scope.task, $location.path("/tasks"));
+            API.UpdateTask($scope.task, function() {
+                $location.path("/tasks");
+            });
         };
 
         $scope.loadTask();
@@ -101,6 +124,6 @@ todoappControllers.controller('taskCtrl', ['$scope', '$http', '$routeParams', '$
 
 
 // controller for settings
-todoappControllers.controller('settingsCtrl', ['$scope', '$http', '$routeParams', '$location', 'alertService',
-    function($scope, $http, $routeParams, $location, alertService) {}
+todoappControllers.controller('settingsCtrl', ['$scope', '$http', '$routeParams', '$location', 'Alerts',
+    function($scope, $http, $routeParams, $location, Alerts) {}
 ]);

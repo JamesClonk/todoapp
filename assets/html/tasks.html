@@ -39,11 +39,13 @@
 			</tr>
 		</thead>
 		<tbody>
-			<tr ng-repeat="task in tasklist | filter:{Completed:'false'} | filter:query | orderBy:SortByPredicate:reverse">
+			<tr ng-repeat="task in tasklist | filter:{Completed:'false'} | GroupFilter | filter:query.Query | orderBy:SortByPredicate:reverse">
 				<td class="toggle"><input type="checkbox" ng-checked="task.Completed" ng-click="ToggleTaskCompletion(task)"></td>
 				<td class="priority priority{{task.Priority}}">{{task.Priority}}</td>
 				<td class="todo">
 					<a href="/#/task/{{task.Id}}" class="task">{{task.Todo}}</a>
+					<a class="context" ng-repeat="context in task.Contexts" ng-click="SetFilterGroup('Context',context)">@{{context}}&nbsp;</a>
+					<a class="project" ng-repeat="project in task.Projects" ng-click="SetFilterGroup('Project',project)">+{{project}}&nbsp;</a>
 					<span class="createdDate">{{task.CreatedDate | DateFormatFilter}}</span>
 				</td>
 				<td ng-class="task.DueDate | DueDateClassFilter" class="dueDate">{{task.DueDate | DueDateFormatFilter}}</td>
@@ -53,17 +55,22 @@
 							<span class="caret"></span>
 						</button>
 						<ul class="dropdown-menu" role="menu">
-							<li><a role="menuitem" href="goto('/task/{{task.Id}}')"><span class="glyphicon glyphicon-edit"></span>&nbsp;&nbsp;Edit Task</a></li>
+							<li><a role="menuitem" href="/#/task/{{task.Id}}"><span class="glyphicon glyphicon-edit"></span>&nbsp;&nbsp;Edit Task</a></li>
 							<li class="divider"></li>
 							<li><a role="menuitem" ng-click="DeleteTask(task)"><span class="glyphicon glyphicon-remove"></span>&nbsp;&nbsp;Delete Task</a></li>
 						</ul>
 					</div>
 				</td>
 			</tr>
-			<tr ng-repeat="task in tasklist | filter:{Completed:'true'} | filter:query | orderBy:SortByPredicate:reverse" class="completed">
+			<tr ng-repeat="task in tasklist | filter:{Completed:'true'} | GroupFilter | filter:query.Query | orderBy:SortByPredicate:reverse" class="completed">
 				<td class="toggle"><input type="checkbox" ng-checked="task.Completed" ng-click="ToggleTaskCompletion(task)"></td>
 				<td class="priority">{{task.Priority}}</td>
-				<td class="todo">{{task.Todo}}</td>
+				<td class="todo">
+					<span class="completedDate">{{task.CompletedDate | DateFormatFilter}}</span>
+					<a class="task">{{task.Todo}}</a>
+					<a class="context" ng-repeat="context in task.Contexts" ng-click="SetFilterGroup('Context',context)">@{{context}}&nbsp;</a>
+					<a class="project" ng-repeat="project in task.Projects" ng-click="SetFilterGroup('Project',project)">+{{project}}&nbsp;</a>
+				</td>
 				<td ng-class="task.DueDate | DueDateClassFilter">{{task.DueDate | DueDateFormatFilter}}</td>
 				<td class="edit"><a role="menuitem" ng-click="deleteTask(task)"><span class="glyphicon glyphicon-trash"></span></a></td>
 			</tr>
@@ -72,5 +79,5 @@
 </div>
 
 <br/>
-<p class="text-info">Total number of tasks: {{tasklist.length}}</p>
+<!--<p class="text-info">Total number of tasks: {{tasklist.length}}</p>-->
 
