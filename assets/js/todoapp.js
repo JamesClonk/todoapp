@@ -76,8 +76,8 @@ todoapp.factory('DataStore', ['$location',
 
         service.UpdateTab = function(path) {
             service.tab.Active = "Tasks";
-            if (path == "/settings") {
-                service.tab.Active = "Settings";
+            if (path == "/settings" || path.substr(0,4) == "/doc") {
+                service.tab.Active = "Tools";
             }
         };
 

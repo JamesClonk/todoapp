@@ -50,7 +50,7 @@ todoapp.run(['$rootScope', '$location', 'API', 'DataStore',
 
         // load tasklist upon todoapp initialization..
         API.LoadTasklist(function() {
-            $location.path("/tasks");
+            $location.path("/");
         });
     }
 ]);

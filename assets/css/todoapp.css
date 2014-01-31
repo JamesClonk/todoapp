@@ -8,6 +8,16 @@ body {
 	padding-bottom: 40px;
 }
 
+.fork-me {
+	position: fixed; 
+	z-index:9001; 
+	top: 0px; 
+	right: 0px; 
+	border: 0px; 
+	width: 149px; 
+	height: 149px;
+}
+
 a {
 	cursor: pointer;
 }
@@ -174,7 +184,14 @@ tr.completed > td.gray {
 Media Queries
 */
 
-@media (max-width: 420px) {
+@media (max-width: 1444px) {
+	.fork-me {
+		z-index:-1; 
+		visibility: hidden;
+	}
+}
+
+@media (max-width: 479px) {
 	body {
 		padding: 0px;
 	}
@@ -189,6 +206,8 @@ Media Queries
 	.tasklist, div.tasklist, table.tasklist {
 		padding: 0px;
 		margin: 0px;
+		-moz-border-radius: 0px;
+		border-radius: 0px;
 	}
 	.quickadd {
 		margin-top: 60px;
