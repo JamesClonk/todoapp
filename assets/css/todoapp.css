@@ -1,9 +1,17 @@
+/*
+---------------------------------------------------
+Page
+*/
+
 body {
 	padding-top: 75px;
 	padding-bottom: 40px;
 }
 
 a {
+	cursor: pointer;
+}
+.pointer {
 	cursor: pointer;
 }
 
@@ -25,7 +33,7 @@ a {
 
 div.tasklist {
 	position: relative;
-	padding: 25px;
+	padding: 15px;
 	padding-bottom: 0px;
 	background-color: #fafafa;
 	border-color: #e0e0e0;
@@ -137,7 +145,7 @@ tr.completed:hover > td.priority {
 tr.completed > td > a {
 	text-decoration: none;
 }
-tr.completed > td > a.task {
+tr.completed > td > .task {
 	text-decoration: line-through;
 }
 tr.completed > td.todo > a.project, tr.completed > td.todo > a.context {
@@ -158,4 +166,31 @@ tr.completed > td.green {
 }
 tr.completed > td.gray {
 	color: #555555;
+}
+
+
+/*
+---------------------------------------------------
+Media Queries
+*/
+
+@media (max-width: 420px) {
+	body {
+		padding: 0px;
+	}
+	.container {
+		padding: 0px;
+		margin: 0px;
+	}
+	.navbar {
+		padding: 0px 15px 0px 15px;
+		margin: 0px;
+	}
+	.tasklist, div.tasklist, table.tasklist {
+		padding: 0px;
+		margin: 0px;
+	}
+	.quickadd {
+		margin-top: 60px;
+	}
 }

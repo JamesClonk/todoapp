@@ -1,16 +1,22 @@
-<form class="form-inline" role="form" ng-submit="AddTask()">
-	<div class="form-group col-lg-8">
-		<label for="quickadd-Todo" class="col-sm-3 control-label">Quick&nbsp;Add:</label>
-		<div class="col-sm-9">
-			<input type="text" class="form-control" id="quickadd-Todo" ng-model="task.Todo" size="30" placeholder="Add new Task text here.." required="required" autofocus="autofocus">
-		</div>
-	</div>
-	<button type="submit" class="btn btn-default"><span class="glyphicon glyphicon-plus"></span>&nbsp;&nbsp;Add Task</button>
-</form>
 
-<br/>
+<div class="quickadd form-group col-xs-10 col-sm-12 col-md-12">
+	<form role="form" ng-submit="AddTask()">
+			<div class="hidden-xs col-sm-2 col-md-2">
+				<label for="quickadd-Todo" class="control-label">Task&nbsp;Quick&nbsp;Add:&nbsp;</label>
+			</div>
+			<div class="col-xs-9 col-sm-8 col-md-8">
+				<input type="text" class="form-control" id="quickadd-Todo" ng-model="task.Todo" size="30" placeholder="Task text here.." required="required" autofocus="autofocus">
+			</div>
+			<div class="col-xs-1 hidden-sm hidden-md hidden-lg">
+				<button type="submit" class="btn btn-default"><span class="glyphicon glyphicon-plus"></span>&nbsp;Task</button>
+			</div>
+			<div class="hidden-xs col-sm-2 col-md-2">
+				<button type="submit" class="btn btn-default"><span class="glyphicon glyphicon-plus"></span>&nbsp;&nbsp;Add&nbsp;Task</button>
+			</div>
+	</form>
+</div>
 
-<div class="table-responsive tasklist">
+<div class="col-xs-12 col-sm-12 col-md-12 tasklist">
 	<table class="table table-condensed tasklist">
 		<thead>
 			<tr>
@@ -32,7 +38,7 @@
 					<a href="" ng-click="predicate = 'DueDate'; reverse=!reverse">
 						<span class="glyphicon glyphicon-sort-by-order" ng-show="!reverse"></span>
 						<span class="glyphicon glyphicon-sort-by-order-alt" ng-show="reverse"></span>
-						Due&nbsp;Date
+						Due
 					</a>
 				</th>
 				<th></th>
@@ -40,7 +46,7 @@
 		</thead>
 		<tbody>
 			<tr ng-repeat="task in tasklist | filter:{Completed:'false'} | GroupFilter | filter:query.Query | orderBy:SortByPredicate:reverse">
-				<td class="toggle"><input type="checkbox" ng-checked="task.Completed" ng-click="ToggleTaskCompletion(task)"></td>
+				<td class="toggle"><i class="fa fa-square-o fa-lg pointer" ng-click="ToggleTaskCompletion(task)"></td>
 				<td class="priority priority{{task.Priority}}">{{task.Priority}}</td>
 				<td class="todo">
 					<a href="/#/task/{{task.Id}}" class="task">{{task.Todo}}</a>
@@ -51,9 +57,7 @@
 				<td ng-class="task.DueDate | DueDateClassFilter" class="dueDate">{{task.DueDate | DueDateFormatFilter}}</td>
 				<td class="edit">
 					<div class="dropdown">
-						<button class="btn btn-default btn-xs dropdown-toggle" type="button" data-toggle="dropdown">
-							<span class="caret"></span>
-						</button>
+						<button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown"><i class="fa fa-caret-down fa-fw"></i></button>
 						<ul class="dropdown-menu" role="menu">
 							<li><a role="menuitem" href="/#/task/{{task.Id}}"><span class="glyphicon glyphicon-edit"></span>&nbsp;&nbsp;Edit Task</a></li>
 							<li class="divider"></li>
@@ -63,16 +67,16 @@
 				</td>
 			</tr>
 			<tr ng-repeat="task in tasklist | filter:{Completed:'true'} | GroupFilter | filter:query.Query | orderBy:SortByPredicate:reverse" class="completed">
-				<td class="toggle"><input type="checkbox" ng-checked="task.Completed" ng-click="ToggleTaskCompletion(task)"></td>
+				<td class="toggle"><i class="fa fa-check-square-o fa-lg pointer" ng-click="ToggleTaskCompletion(task)"></i></td>
 				<td class="priority">{{task.Priority}}</td>
 				<td class="todo">
 					<span class="completedDate">{{task.CompletedDate | DateFormatFilter}}</span>
-					<a class="task">{{task.Todo}}</a>
+					<span class="task">{{task.Todo}}</span>
 					<a class="context" ng-repeat="context in task.Contexts" ng-click="SetFilterGroup('Context',context)">@{{context}}&nbsp;</a>
 					<a class="project" ng-repeat="project in task.Projects" ng-click="SetFilterGroup('Project',project)">+{{project}}&nbsp;</a>
 				</td>
 				<td ng-class="task.DueDate | DueDateClassFilter">{{task.DueDate | DueDateFormatFilter}}</td>
-				<td class="edit"><a role="menuitem" ng-click="deleteTask(task)"><span class="glyphicon glyphicon-trash"></span></a></td>
+				<td class="edit"><button type="button" class="btn btn-danger" ng-click="DeleteTask(task)"><i class="fa fa-trash-o fa-fw"></i></button></td>
 			</tr>
 		</tbody>
 	</table>
