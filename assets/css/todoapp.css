@@ -178,6 +178,20 @@ tr.completed > td.gray {
 	color: #555555;
 }
 
+div.duedatePicker {
+	max-width:320px;
+}
+input.todo {
+	color: #000000;
+	font-weight: normal;
+	font-size: 18px;
+	height: 45px;
+}
+input.contexts, input.projects {
+	color: rgb(66, 139, 202);
+	font-weight: bold;
+	font-size: 12px;
+}
 
 /*
 ---------------------------------------------------
@@ -188,6 +202,15 @@ Media Queries
 	.fork-me {
 		z-index:-1; 
 		visibility: hidden;
+	}
+}
+
+@media (max-width: 767px) {
+	div.row > div.quickadd > form > div.quickadd {
+		margin-bottom: 10px;
+	}
+	div.row {
+		padding: 0px 5px 0px 5px;
 	}
 }
 
@@ -203,13 +226,16 @@ Media Queries
 		padding: 0px 15px 0px 15px;
 		margin: 0px;
 	}
+	div.row {
+		padding: 0px 15px 0px 15px;
+	}
 	.tasklist, div.tasklist, table.tasklist {
 		padding: 0px;
 		margin: 0px;
 		-moz-border-radius: 0px;
 		border-radius: 0px;
 	}
-	.quickadd {
+	div.row > div.quickadd, div.taskedit {
 		margin-top: 60px;
 	}
 }

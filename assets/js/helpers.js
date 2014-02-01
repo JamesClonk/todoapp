@@ -96,6 +96,10 @@ todoapp.filter('DueDateFormatFilter', function() {
 		} else if (diff == 1) {
 			return "tomorrow"
 		}
+
+		if (moment().hours() >= 12) {
+			return mdate.endOf('day').fromNow();
+		}
 		return mdate.startOf('day').fromNow();
 	}
 });

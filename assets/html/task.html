@@ -1,33 +1,58 @@
-<h1>Task: {{task}}</h1>
 
-<h1>Priority: {{task.Priority}}</h1>
+<div class="taskedit form-group col-xs-12 col-sm-12 col-md-12">
+	<form ng-submit="UpdateTask()">
 
-<h1>Due Date: {{task.DueDate | DueDateFormatFilter}}</h1>
-
- 
-<form ng-submit="UpdateTask()">
-	<select ng-model="task.Priority" ng-options="p.priority for p in priorities">
-		<option value="">---</option>
-	</select>
-
-	<input type="text" ng-model="task.Todo"></input>
-
-	<div class="row">
-		<div class="col-md-6">
-			<p class="input-group">
-			<input type="text" class="form-control" show-button-bar="true" ng-model="task.DueDate" is-open="datepickerOpened" show-weeks="false"
-			min="2000-01-01" max="'2099-09-09'" ng-required="false" close-text="Close" datepicker-popup="{{datepickerFormat}}"/>
-			<span class="input-group-btn">
-			<button class="btn btn-default" ng-click="openDatepicker($event)"><i class="glyphicon glyphicon-calendar"></i></button>
-			</span>
-			</p>
+		<div class="row">
+			<div class="col-xs-3 col-sm-2 col-md-2 col-lg-1">
+				<label for="Priority" class="control-label">Priority:&nbsp;</label><br/>
+				<select id="Priority" ng-model="task.Priority" ng-options="p.priority for p in priorities">
+					<option value="">---</option>
+				</select>
+			</div>
+			<div class="col-xs-9 col-sm-10 col-md-10 col-lg-11 duedatePicker">
+				<label for="DueDate" class="control-label">Due&nbsp;Date:&nbsp;</label>
+				<div class="input-group">
+					<input type="text" id="DueDate" class="form-control" show-button-bar="true" ng-model="task.DueDate" is-open="datepickerOpened" show-weeks="false"
+					ng-required="false" close-text="Close" datepicker-popup="{{datepickerFormat}}" datepicker-options="dateOptions"/>
+					<span class="input-group-btn">
+					<button class="btn btn-default" ng-click="openDatepicker($event)"><i class="glyphicon glyphicon-calendar"></i></button>
+					</span>
+				</div>
+			</div>
 		</div>
-	</div>
 
-	<input type="text" ng-model="task.DueDate"></input>
+		<br/>
 
-	<br/>
-	<a ng-click="Goto('/tasks')">Cancel</a>
-	<input type="submit" value="Save"/>
-</form>
+		<div class="row">
+			<div class="col-xs-12 col-sm-12 col-md-10 col-lg-8">
+				<label for="Todo" class="control-label">Task:&nbsp;</label>
+				<input type="text" id="Todo" class="form-control todo" ng-model="task.Todo" placeholder="Task text here.." required="required" autofocus="autofocus"></input>
+			</div>
+		</div>
+
+		<br/>
+
+		<div class="row">
+			<div class="col-xs-6 col-sm-6 col-md-5 col-lg-4">
+				<label for="Contexts" class="control-label">Contexts:&nbsp;</label>
+				<input type="text" id="Contexts" class="form-control contexts" ng-model="task.Contexts"></input>
+			</div>
+			<div class="col-xs-6 col-sm-6 col-md-5 col-lg-4">
+				<label for="Projects" class="control-label">Projects:&nbsp;</label>
+				<input type="text" id="Projects" class="form-control projects" ng-model="task.Projects"></input>
+			</div>
+		</div>
+
+		<br/>
+
+		<div class="row">
+			<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+				<button type="button" class="btn btn-default" ng-click="Goto('/tasks')"><span class="glyphicon glyphicon-remove"></span>&nbsp;&nbsp;Cancel</button>
+				&nbsp;&nbsp;
+				<button type="submit" class="btn btn-default"><span class="glyphicon glyphicon-ok"></span>&nbsp;&nbsp;Save&nbsp;Task</button>
+			</div>
+		</div>
+		
+	</form>
+</div>
 

@@ -122,8 +122,8 @@ todoapp.factory('DataStore', ['$location',
 ]);
 
 // tasklist / API service
-todoapp.factory('API', ['$http', 'Alerts',
-	function($http, Alerts) {
+todoapp.factory('API', ['$http', '$location', 'Alerts',
+	function($http, $location, Alerts) {
 		var service = {};
 
 		service.tasklist = [];
@@ -132,7 +132,9 @@ todoapp.factory('API', ['$http', 'Alerts',
 		service.LoadTasklist = function(callback) {
 			$http.get('/api/tasks').success(function(data) {
 				service.tasklist = data;
-				callback();
+				if (callback) {
+					callback();
+				}
 			}).error(function(data, status, headers, config) {
 				Alerts.addAlert("danger", 'Tasklist could not be loaded. [HTTP Status Code: ' + status + ']');
 			});
@@ -140,12 +142,23 @@ todoapp.factory('API', ['$http', 'Alerts',
 
 		service.GetTask = function(id) {
 			service.task = null;
+
+			// check if new task should be created and returned
+			if (id == "new") {
+				service.task = {
+					"CreatedDate": new Date()
+				};
+				return service.task;
+			}
+
 			for (var i = 0; i < service.tasklist.length; i++) {
 				if (service.tasklist[i].Id == id) {
 					service.task = service.tasklist[i];
 					return service.task;
 				}
 			}
+
+			Alerts.addAlert("danger", 'Could not get Task. [Id: ' + id + ']');
 		};
 
 		service.LoadTask = function(id) {
@@ -157,10 +170,13 @@ todoapp.factory('API', ['$http', 'Alerts',
 			});
 		};
 
-		service.AddTask = function(task) {
+		service.AddTask = function(task, callback) {
 			$http.post('/api/task', service.dateValidation(task)).success(function(newTask) {
 				if (newTask.Id != 0) {
 					service.tasklist.push(newTask);
+					if (callback) {
+						callback();
+					}
 				} else {
 					Alerts.addAlert("danger", 'Task could not be added, since API did not return a correct Task.ID');
 				}
@@ -209,7 +225,9 @@ todoapp.factory('API', ['$http', 'Alerts',
 		service.UpdateTask = function(task, callback) {
 			$http.put('/api/task/' + task.Id, service.dateValidation(task)).success(function() {
 				service.modifyTask(task);
-				callback();
+				if (callback) {
+					callback();
+				}
 			}).error(function(data, status, headers, config) {
 				Alerts.addAlert("danger", 'Task could not be updated. [HTTP Status Code: ' + status + ']');
 			});
@@ -226,7 +244,11 @@ todoapp.factory('API', ['$http', 'Alerts',
 
 		service.DeleteTask = function(task) {
 			$http.delete('/api/task/' + task.Id).success(function() {
-				service.removeTaskById(task.Id);
+				//service.removeTaskById(task.Id);
+				// have to refresh tasklist from API after delete, because of possible Task.Id changes / ordering
+				service.LoadTasklist(function() {
+					$location.path("/");
+				});
 			}).error(function(data, status, headers, config) {
 				Alerts.addAlert("danger", 'Task could not be deleted. [HTTP Status Code: ' + status + ']');
 			});

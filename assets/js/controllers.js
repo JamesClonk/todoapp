@@ -111,6 +111,10 @@ todoappControllers.controller('taskCtrl', ['$scope', '$http', '$routeParams', '$
 		$scope.datepickerOpened = false;
 		$scope.datepickerFormat = 'yyyy-MM-dd';
 
+		$scope.dateOptions = {
+			'starting-day': 1
+		};
+
 		$scope.priorities = [{
 			"priority": 'A'
 		}, {
@@ -139,12 +143,27 @@ todoappControllers.controller('taskCtrl', ['$scope', '$http', '$routeParams', '$
 				$scope.task.DueDate = null;
 			}
 
+			// stringify context and project arrays
+			if ($scope.task.Contexts != null) {
+				$scope.task.Contexts = $scope.task.Contexts.join(", ");
+			}
+			if ($scope.task.Projects != null) {
+				$scope.task.Projects = $scope.task.Projects.join(", ");
+			}
+
 			for (var p in $scope.priorities) {
 				if ($scope.task.Priority == $scope.priorities[p].priority) {
 					$scope.task.Priority = $scope.priorities[p];
 				}
 			}
 		};
+
+		$scope.trimList = function(list) {
+			for (var i = 0; i < list.length; i++) {
+				list[i] = list[i].trim();
+			}
+			return list;
+		}
 
 		$scope.UpdateTask = function() {
 			// create a copy of task again to avoid confusing the datepicker because of date validation code inside API.UpdateTask
@@ -156,9 +175,24 @@ todoappControllers.controller('taskCtrl', ['$scope', '$http', '$routeParams', '$
 				task.Priority = "";
 			}
 
-			API.UpdateTask(task, function() {
-				$location.path("/tasks");
-			});
+			// arrayify context and project strings
+			if (task.Contexts != null) {
+				task.Contexts = $scope.trimList(task.Contexts.split(","));
+			}
+			if (task.Projects != null) {
+				task.Projects = $scope.trimList(task.Projects.split(","));
+			}
+
+			// insert or update, decide based on taskId routing parameter
+			if ($scope.taskId == "new") {
+				API.AddTask(task, function() {
+					$location.path("/tasks");
+				});
+			} else {
+				API.UpdateTask(task, function() {
+					$location.path("/tasks");
+				});
+			}
 		};
 
 		$scope.loadTask();
