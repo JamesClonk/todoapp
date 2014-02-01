@@ -1,5 +1,3 @@
-TBD: detail view for {{taskId}}
-
 <h1>Task: {{task}}</h1>
 
 <h1>Priority: {{task.Priority}}</h1>
@@ -8,8 +6,24 @@ TBD: detail view for {{taskId}}
 
  
 <form ng-submit="UpdateTask()">
-	<input type="text" ng-model="task.Priority"></input>
+	<select ng-model="task.Priority" ng-options="p.priority for p in priorities">
+		<option value="">---</option>
+	</select>
+
 	<input type="text" ng-model="task.Todo"></input>
+
+	<div class="row">
+		<div class="col-md-6">
+			<p class="input-group">
+			<input type="text" class="form-control" show-button-bar="true" ng-model="task.DueDate" is-open="datepickerOpened" show-weeks="false"
+			min="2000-01-01" max="'2099-09-09'" ng-required="false" close-text="Close" datepicker-popup="{{datepickerFormat}}"/>
+			<span class="input-group-btn">
+			<button class="btn btn-default" ng-click="openDatepicker($event)"><i class="glyphicon glyphicon-calendar"></i></button>
+			</span>
+			</p>
+		</div>
+	</div>
+
 	<input type="text" ng-model="task.DueDate"></input>
 
 	<br/>
