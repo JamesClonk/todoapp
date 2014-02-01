@@ -56,6 +56,17 @@ todoappControllers.controller('navbarCtrl', ['$scope', 'API', 'DataStore',
 				DataStore.Goto("/"); // causes a redirect and forces view to update
 			});
 		};
+
+		$scope.DefaultSortTasklist = function() {
+			API.DefaultSortTasklist(API.tasklist);
+			DataStore.Goto("/"); // causes a redirect and forces view to update
+		};
+
+		$scope.ClearTasklist = function() {
+			API.ClearTasklist(function() {
+				DataStore.Goto("/"); // causes a redirect and forces view to update
+			});
+		};
 	}
 ]);
 
@@ -85,16 +96,9 @@ todoappControllers.controller('tasklistCtrl', ['$scope', '$http', '$location', '
 		// custom sort predicate function needed to deal with "empty" priorities and due dates
 		$scope.SortByPredicate = function(task) {
 			if ($scope.predicate == "DueDate") {
-				if (moment(task.DueDate).year() > 1) {
-					return moment(task.DueDate);
-				}
-				// seems far enough into the future to be on the safe side..
-				return moment("9999-01-01");
+				return API.mapDueDate(task.DueDate)
 			} else if ($scope.predicate == "Priority") {
-				if (task.Priority != "") {
-					return task.Priority;
-				}
-				return "XYZ";
+				return API.mapPriority(task.Priority)
 			} else {
 				return task[$scope.predicate];
 			}

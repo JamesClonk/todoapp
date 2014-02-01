@@ -202,6 +202,21 @@ func setupRoutes(r martini.Router) {
 		r.JSON(http.StatusNoContent, `{}`)
 	})
 
+	r.Delete("/api/tasks", func(tasks todo.TaskList, config *Config, r render.Render) {
+		openTasks := make(todo.TaskList, 0)
+		for _, task := range tasks {
+			if !task.Completed {
+				openTasks.AddTask(&task)
+			}
+		}
+
+		if err := openTasks.WriteToFilename(config.TodoTxtFilename); err != nil {
+			r.Error(http.StatusInternalServerError)
+			return
+		}
+		r.JSON(http.StatusOK, openTasks)
+	})
+
 	// api - for config file
 	r.Get("/api/config", func(config *Config, r render.Render) {
 		r.JSON(http.StatusOK, config)

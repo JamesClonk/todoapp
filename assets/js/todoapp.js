@@ -129,14 +129,48 @@ todoapp.factory('API', ['$http', '$location', 'Alerts',
 		service.tasklist = [];
 		service.task = null;
 
+		service.mapPriority = function(priority) {
+			if (priority != "") {
+				return priority;
+			}
+			return "XYZ";
+		}
+
+		service.mapDueDate = function(dueDate) {
+			if (moment(dueDate).year() > 1) {
+				return moment(dueDate);
+			}
+			// seems far enough into the future to be on the safe side..
+			return moment("9999-01-01");
+		}
+
+		service.DefaultSortTasklist = function(data) {
+			data.sort(function(a, b) {
+				return service.mapPriority(a.Priority) > service.mapPriority(b.Priority) ||
+					(service.mapPriority(a.Priority) == service.mapPriority(b.Priority) && service.mapDueDate(a.DueDate) > service.mapDueDate(b.DueDate));
+			});
+		};
+
 		service.LoadTasklist = function(callback) {
 			$http.get('/api/tasks').success(function(data) {
+				service.DefaultSortTasklist(data);
 				service.tasklist = data;
 				if (callback) {
 					callback();
 				}
 			}).error(function(data, status, headers, config) {
 				Alerts.addAlert("danger", 'Tasklist could not be loaded. [HTTP Status Code: ' + status + ']');
+			});
+		};
+
+		service.ClearTasklist = function(callback) {
+			$http.delete('/api/tasks').success(function(data) {
+				service.tasklist = data;
+				if (callback) {
+					callback();
+				}
+			}).error(function(data, status, headers, config) {
+				Alerts.addAlert("danger", 'Tasklist could not be cleared. [HTTP Status Code: ' + status + ']');
 			});
 		};
 

@@ -515,6 +515,62 @@ func Test_todoapp_api_DeleteTask(t *testing.T) {
 	Expect(t, response.Code, http.StatusNotFound)
 }
 
+func Test_todoapp_api_DeleteTasks(t *testing.T) {
+	m := setupMartini()
+
+	config, err := readConfigurationFile(configFile)
+	if err != nil {
+		t.Fatal(err)
+	}
+	tasksFromFile, err := todo.LoadFromFilename(config.TodoTxtFilename)
+	if err != nil {
+		t.Fatal(err)
+	}
+	Expect(t, len(tasksFromFile), 9)
+
+	if _, err := tasksFromFile.GetTask(5); err != nil {
+		t.Fatal(err)
+	}
+
+	// ---------------------------------------------------------------------------
+	// delete completed task / clear tasklist
+	response := httptest.NewRecorder()
+	req, err := http.NewRequest("DELETE", "http://localhost:4005/api/tasks", nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	m.ServeHTTP(response, req)
+	Expect(t, response.Code, http.StatusOK)
+
+	body := response.Body.String()
+	Contain(t, body, `"Original": "2013-02-22 Pick up milk @GroceryStore",`)
+
+	if err := tasksFromFile.LoadFromFilename(config.TodoTxtFilename); err != nil {
+		t.Fatal(err)
+	}
+	Expect(t, len(tasksFromFile), 6)
+
+	// ---------------------------------------------------------------------------
+	// try to delete completed task / clear tasklist, where there are only open tasks left
+	response = httptest.NewRecorder()
+	req, err = http.NewRequest("DELETE", "http://localhost:4005/api/tasks", nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	m.ServeHTTP(response, req)
+	Expect(t, response.Code, http.StatusOK)
+
+	body = response.Body.String()
+	Contain(t, body, `(F) 2014-02-01 Call dry cleaner @Home due:2014-02-19`)
+
+	if err := tasksFromFile.LoadFromFilename(config.TodoTxtFilename); err != nil {
+		t.Fatal(err)
+	}
+	Expect(t, len(tasksFromFile), 6)
+}
+
 func Test_todoapp_api_GetConfig(t *testing.T) {
 	m := setupMartini()
 
