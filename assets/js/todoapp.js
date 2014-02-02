@@ -24,6 +24,12 @@ todoapp.config(['$routeProvider',
 			templateUrl: '/html/settings.html',
 			controller: 'settingsCtrl'
 		}).
+		when('/doc/user', {
+			templateUrl: '/html/manual.html'
+		}).
+		when('/doc/api', {
+			templateUrl: '/html/api.html'
+		}).
 		otherwise({
 			redirectTo: '/tasks'
 		});
@@ -165,6 +171,7 @@ todoapp.factory('API', ['$http', '$location', 'Alerts',
 
 		service.ClearTasklist = function(callback) {
 			$http.delete('/api/tasks').success(function(data) {
+				service.DefaultSortTasklist(data);
 				service.tasklist = data;
 				if (callback) {
 					callback();

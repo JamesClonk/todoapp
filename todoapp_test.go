@@ -545,6 +545,9 @@ func Test_todoapp_api_DeleteTasks(t *testing.T) {
 
 	body := response.Body.String()
 	Contain(t, body, `"Original": "2013-02-22 Pick up milk @GroceryStore",`)
+	Contain(t, body, `"Id": 2`)
+	Contain(t, body, `"Id": 5`)
+	NotContain(t, body, `"Id": 0`)
 
 	if err := tasksFromFile.LoadFromFilename(config.TodoTxtFilename); err != nil {
 		t.Fatal(err)
@@ -563,7 +566,10 @@ func Test_todoapp_api_DeleteTasks(t *testing.T) {
 	Expect(t, response.Code, http.StatusOK)
 
 	body = response.Body.String()
-	Contain(t, body, `(F) 2014-02-01 Call dry cleaner @Home due:2014-02-19`)
+	Contain(t, body, `(F) 2014-02-02 Call dry cleaner @Home due:2014-02-19`)
+	Contain(t, body, `"Id": 3`)
+	Contain(t, body, `"Id": 6`)
+	NotContain(t, body, `"Id": 0`)
 
 	if err := tasksFromFile.LoadFromFilename(config.TodoTxtFilename); err != nil {
 		t.Fatal(err)

@@ -4,13 +4,13 @@
 
 		<div class="row">
 			<div class="col-xs-3 col-sm-2 col-md-2 col-lg-1">
-				<label for="Priority" class="control-label">Priority:&nbsp;</label><br/>
+				<label for="Priority" class="control-label"><span class="label label-primary">Priority:</span>&nbsp;</label><br/>
 				<select id="Priority" ng-model="task.Priority" ng-options="p.priority for p in priorities">
 					<option value="">---</option>
 				</select>
 			</div>
 			<div class="col-xs-9 col-sm-10 col-md-10 col-lg-11 duedatePicker">
-				<label for="DueDate" class="control-label">Due&nbsp;Date:&nbsp;</label>
+				<label for="DueDate" class="control-label"><span class="label label-primary">Due&nbsp;Date:</span>&nbsp;</label>
 				<div class="input-group">
 					<input type="text" id="DueDate" class="form-control" show-button-bar="true" ng-model="task.DueDate" is-open="datepickerOpened" show-weeks="false"
 					ng-required="false" close-text="Close" datepicker-popup="{{datepickerFormat}}" datepicker-options="dateOptions"/>
@@ -25,7 +25,7 @@
 
 		<div class="row">
 			<div class="col-xs-12 col-sm-12 col-md-10 col-lg-8">
-				<label for="Todo" class="control-label">Task:&nbsp;</label>
+				<label for="Todo" class="control-label"><span class="label label-primary">Task:</span>&nbsp;</label>
 				<input type="text" id="Todo" class="form-control todo" ng-model="task.Todo" placeholder="Task text here.." required="required" autofocus="autofocus"></input>
 			</div>
 		</div>
@@ -34,11 +34,11 @@
 
 		<div class="row">
 			<div class="col-xs-6 col-sm-6 col-md-5 col-lg-4">
-				<label for="Contexts" class="control-label">Contexts:&nbsp;</label>
+				<label for="Contexts" class="control-label"><span class="label label-primary">Contexts:</span>&nbsp;</label>
 				<input type="text" id="Contexts" class="form-control contexts" ng-model="task.Contexts"></input>
 			</div>
 			<div class="col-xs-6 col-sm-6 col-md-5 col-lg-4">
-				<label for="Projects" class="control-label">Projects:&nbsp;</label>
+				<label for="Projects" class="control-label"><span class="label label-primary">Projects:</span>&nbsp;</label>
 				<input type="text" id="Projects" class="form-control projects" ng-model="task.Projects"></input>
 			</div>
 		</div>

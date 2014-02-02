@@ -33,7 +33,7 @@ func main() {
 	app := cli.NewApp()
 	app.Name = "todoapp"
 	app.Usage = "A browser-based Todo.txt application"
-	app.Version = "0.1.0"
+	app.Version = "1.0.0"
 	app.Author = "JamesClonk"
 	app.Email = "jamesclonk@jamesclonk.ch"
 	app.Action = mainAction

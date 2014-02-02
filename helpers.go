@@ -26,6 +26,12 @@ func Contain(t *testing.T, body string, expected string) {
 	}
 }
 
+func NotContain(t *testing.T, body string, expected string) {
+	if strings.Contains(body, expected) {
+		t.Errorf("Expected body not to contain [%v]", expected)
+	}
+}
+
 func Contains(t *testing.T, got []interface{}, expected interface{}) {
 	for i := range got {
 		if reflect.DeepEqual(got[i], expected) {
