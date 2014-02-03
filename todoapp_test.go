@@ -602,6 +602,12 @@ func Test_todoapp_api_GetConfig(t *testing.T) {
 	Expect(t, config.SortOrder, []string{"-DueDate", "Priority", "Todo"})
 	Expect(t, config.DeleteWarning, false)
 	Expect(t, config.ClearWarning, false)
+	Expect(t, config.Colors["PriorityA"], "#ff0000")
+	Expect(t, config.Colors["PriorityB"], "#ff9900")
+	Expect(t, config.Colors["PriorityC"], "#ffff00")
+	Expect(t, config.Colors["PriorityD"], "#0000ff")
+	Expect(t, config.Colors["PriorityE"], "#00ff00")
+	Expect(t, config.Colors["PriorityF"], "#eeeeee")
 }
 
 func Test_todoapp_api_PutConfig(t *testing.T) {
@@ -615,10 +621,19 @@ func Test_todoapp_api_PutConfig(t *testing.T) {
 	Expect(t, config.SortOrder, []string{"-DueDate", "Priority", "Todo"})
 	Expect(t, config.DeleteWarning, false)
 	Expect(t, config.ClearWarning, false)
+	Expect(t, config.Colors["PriorityA"], "#ff0000")
+	Expect(t, config.Colors["PriorityB"], "#ff9900")
+	Expect(t, config.Colors["PriorityC"], "#ffff00")
+	Expect(t, config.Colors["PriorityD"], "#0000ff")
+	Expect(t, config.Colors["PriorityE"], "#00ff00")
+	Expect(t, config.Colors["PriorityF"], "#eeeeee")
 
 	config.TodoTxtFilename = "junk!"
 	config.DeleteWarning = true
 	config.SortOrder = []string{"Something", "Else", "Entirely"}
+	config.Colors["PriorityA"] = "#aa0000"
+	config.Colors["PriorityB"] = "#00bb00"
+	config.Colors["PriorityC"] = "#0000cc"
 	data, err := json.MarshalIndent(config, "", "  ")
 	if err != nil {
 		t.Fatal(err)
@@ -648,6 +663,12 @@ func Test_todoapp_api_PutConfig(t *testing.T) {
 	Expect(t, config1.SortOrder, []string{"Something", "Else", "Entirely"})
 	Expect(t, config1.DeleteWarning, true)
 	Expect(t, config1.ClearWarning, false)
+	Expect(t, config1.Colors["PriorityA"], "#aa0000")
+	Expect(t, config1.Colors["PriorityB"], "#00bb00")
+	Expect(t, config1.Colors["PriorityC"], "#0000cc")
+	Expect(t, config.Colors["PriorityD"], "#0000ff")
+	Expect(t, config.Colors["PriorityE"], "#00ff00")
+	Expect(t, config.Colors["PriorityF"], "#eeeeee")
 
 	config2, err := readConfigurationFile(configFile)
 	if err != nil {
@@ -657,4 +678,10 @@ func Test_todoapp_api_PutConfig(t *testing.T) {
 	Expect(t, config2.SortOrder, []string{"Something", "Else", "Entirely"})
 	Expect(t, config2.DeleteWarning, true)
 	Expect(t, config2.ClearWarning, false)
+	Expect(t, config2.Colors["PriorityA"], "#aa0000")
+	Expect(t, config2.Colors["PriorityB"], "#00bb00")
+	Expect(t, config2.Colors["PriorityC"], "#0000cc")
+	Expect(t, config.Colors["PriorityD"], "#0000ff")
+	Expect(t, config.Colors["PriorityE"], "#00ff00")
+	Expect(t, config.Colors["PriorityF"], "#eeeeee")
 }

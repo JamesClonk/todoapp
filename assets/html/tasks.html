@@ -50,7 +50,7 @@
 			<tbody>
 				<tr ng-repeat="task in tasklist | filter:{Completed:'false'} | GroupFilter | filter:query.Query | orderBy:SortByPredicate:reverse">
 					<td class="toggle"><i class="fa fa-square-o fa-lg pointer" ng-click="ToggleTaskCompletion(task)"></td>
-					<td class="priority priority{{task.Priority}}">{{task.Priority}}</td>
+					<td class="priority" style="background-color: {{GetTaskColor(task.Priority)}};">{{task.Priority}}</td><!--priority{{task.Priority}}-->
 					<td class="todo">
 						<a href="/#/task/{{task.Id}}" class="task">{{task.Todo}}</a>
 						<a class="context" ng-repeat="context in task.Contexts" ng-click="SetFilterGroup('Context',context)">@{{context}}&nbsp;</a>

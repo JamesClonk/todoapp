@@ -26,6 +26,12 @@ func Test_config_readConfigurationFile(t *testing.T) {
 	Expect(t, config.SortOrder, []string{"Priority", "-DueDate", "Todo"})
 	Expect(t, config.DeleteWarning, true)
 	Expect(t, config.ClearWarning, true)
+	Expect(t, config.Colors["PriorityA"], "#cc0000")
+	Expect(t, config.Colors["PriorityB"], "#ee9900")
+	Expect(t, config.Colors["PriorityC"], "#eeee00")
+	Expect(t, config.Colors["PriorityD"], "#3366ff")
+	Expect(t, config.Colors["PriorityE"], "#33cc33")
+	Expect(t, config.Colors["PriorityF"], "#cccccc")
 
 	// now read an existing config file with different settings
 	config, err = readConfigurationFile("testdata/test.config")
@@ -36,6 +42,12 @@ func Test_config_readConfigurationFile(t *testing.T) {
 	Expect(t, config.SortOrder, []string{"-DueDate", "Priority", "Todo"})
 	Expect(t, config.DeleteWarning, false)
 	Expect(t, config.ClearWarning, false)
+	Expect(t, config.Colors["PriorityA"], "#ff0000")
+	Expect(t, config.Colors["PriorityB"], "#ff9900")
+	Expect(t, config.Colors["PriorityC"], "#ffff00")
+	Expect(t, config.Colors["PriorityD"], "#0000ff")
+	Expect(t, config.Colors["PriorityE"], "#00ff00")
+	Expect(t, config.Colors["PriorityF"], "#eeeeee")
 }
 
 func Test_config_writeConfigurationFile(t *testing.T) {

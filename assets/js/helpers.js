@@ -55,6 +55,9 @@ todoapp.run(['$rootScope', '$location', 'API', 'DataStore',
 			DataStore.Goto("/tasks");
 		};
 
+		// load configuration settings upon todoapp initialization..
+		API.LoadConfig();
+
 		// load tasklist upon todoapp initialization..
 		API.LoadTasklist(function() {
 			$location.path("/");
@@ -65,6 +68,10 @@ todoapp.run(['$rootScope', '$location', 'API', 'DataStore',
 // filters
 todoapp.filter('DueDateFormatFilter', function() {
 	return function(date) {
+		if (!date || date == null || date == "") {
+			return "";
+		}
+
 		var dt = new Date(date);
 		dt = new Date(dt.getFullYear(), dt.getMonth(), dt.getDate());
 		var now = new Date();
@@ -98,6 +105,10 @@ todoapp.filter('DueDateFormatFilter', function() {
 
 todoapp.filter('DateFormatFilter', function() {
 	return function(date) {
+		if (!date || date == null || date == "") {
+			return "";
+		}
+
 		var dt = new Date(date);
 		dt = new Date(dt.getFullYear(), dt.getMonth(), dt.getDate());
 

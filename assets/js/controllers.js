@@ -70,12 +70,67 @@ todoappControllers.controller('navbarCtrl', ['$scope', 'API', 'DataStore',
 	}
 ]);
 
+
+// controller for settings
+todoappControllers.controller('settingsCtrl', ['$scope', '$http', '$location', 'Alerts', 'API',
+	function($scope, $http, $location, Alerts, API) {
+		$scope.config = API.config;
+
+		$scope.CancelSettings = function() {
+			API.LoadConfig(function() {
+				$scope.config = API.config;
+				$location.path("/");
+			});
+		}
+
+		$scope.ReloadSettings = function() {
+			API.LoadConfig(function() {
+				$scope.config = API.config;
+				$location.path("/settings");
+			});
+		}
+
+		$scope.ResetSettings = function() {
+			$scope.config.TodoTxtFilename = "todo.txt";
+			$scope.config.SortOrder = ["Priority", "-DueDate", "Todo"];
+			$scope.config.DeleteWarning = true;
+			$scope.config.ClearWarning = true;
+			$scope.config.Colors = {
+				"PriorityA": "#cc0000",
+				"PriorityB": "#ee9900",
+				"PriorityC": "#eeee00",
+				"PriorityD": "#3366ff",
+				"PriorityE": "#33cc33",
+				"PriorityF": "#cccccc",
+			};
+		}
+
+		$scope.UpdateConfig = function() {
+			API.UpdateConfig($scope.config);
+		}
+	}
+]);
+
+
 // controller for list of tasks
 todoappControllers.controller('tasklistCtrl', ['$scope', '$http', '$location', 'Alerts', 'API', 'DataStore',
 	function($scope, $http, $location, Alerts, API, DataStore) {
 		$scope.predicate = 'Priority';
 		$scope.tasklist = API.tasklist;
 		$scope.query = DataStore.query;
+
+		$scope.GetTaskColor = function(priority) {
+			if (priority != "A" && priority != "B" && priority != "C" && priority != "D" && priority != "E") {
+				priority = "F";
+			}
+			if (API.config.Colors) {
+				var key = "Priority" + priority;
+				if (key in API.config.Colors) {
+					return API.config.Colors[key];
+				}
+			}
+			return "#cccccc";
+		}
 
 		$scope.ToggleTaskCompletion = function(task) {
 			API.ToggleTaskCompletion(task);
@@ -202,10 +257,4 @@ todoappControllers.controller('taskCtrl', ['$scope', '$http', '$routeParams', '$
 
 		$scope.loadTask();
 	}
-]);
-
-
-// controller for settings
-todoappControllers.controller('settingsCtrl', ['$scope', '$http', '$routeParams', '$location', 'Alerts',
-	function($scope, $http, $routeParams, $location, Alerts) {}
 ]);

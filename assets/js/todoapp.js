@@ -5,6 +5,7 @@
 var todoapp = angular.module('todoapp', [
 	'ngRoute',
 	'ui.bootstrap',
+	'colorpicker.module',
 	'todoappControllers'
 ]);
 
@@ -12,6 +13,10 @@ var todoapp = angular.module('todoapp', [
 todoapp.config(['$routeProvider',
 	function($routeProvider) {
 		$routeProvider.
+		when('/settings', {
+			templateUrl: '/html/settings.html',
+			controller: 'settingsCtrl'
+		}).
 		when('/tasks', {
 			templateUrl: '/html/tasks.html',
 			controller: 'tasklistCtrl'
@@ -19,10 +24,6 @@ todoapp.config(['$routeProvider',
 		when('/task/:taskId', {
 			templateUrl: '/html/task.html',
 			controller: 'taskCtrl'
-		}).
-		when('/settings', {
-			templateUrl: '/html/settings.html',
-			controller: 'settingsCtrl'
 		}).
 		when('/doc/user', {
 			templateUrl: '/html/manual.html'
@@ -134,6 +135,7 @@ todoapp.factory('API', ['$http', '$location', 'Alerts',
 
 		service.tasklist = [];
 		service.task = null;
+		service.config = {};
 
 		service.mapPriority = function(priority) {
 			if (priority != "") {
@@ -231,7 +233,7 @@ todoapp.factory('API', ['$http', '$location', 'Alerts',
 			if (task.Completed) {
 				task.CompletedDate = new Date();
 			} else {
-				task.CompletedDate = new Date("0001-01-01T00:00:00Z"); // golang zero time
+				task.CompletedDate = "0001-01-01T00:00:00Z"; // golang zero time
 			}
 
 			$http.put('/api/task/' + task.Id, service.dateValidation(task)).success(function() {
@@ -251,20 +253,21 @@ todoapp.factory('API', ['$http', '$location', 'Alerts',
 		};
 
 		service.dateValidation = function(task) {
-			if (task.CreatedDate == null) {
-				task.CreatedDate = new Date("0001-01-01T00:00:00Z"); // golang zero time
+			if (task.CreatedDate == null || task.CreatedDate == "") {
+				task.CreatedDate = "0001-01-01T00:00:00Z"; // golang zero time
 			}
-			if (task.CompletedDate == null) {
-				task.CompletedDate = new Date("0001-01-01T00:00:00Z"); // golang zero time
+			if (task.CompletedDate == null || task.CompletedDate == "") {
+				task.CompletedDate = "0001-01-01T00:00:00Z"; // golang zero time
 			}
-			if (task.DueDate == null) {
-				task.DueDate = new Date("0001-01-01T00:00:00Z"); // golang zero time
+			if (task.DueDate == null || task.DueDate == "") {
+				task.DueDate = "0001-01-01T00:00:00Z"; // golang zero time
 			}
 			return task;
 		};
 
 		service.UpdateTask = function(task, callback) {
-			$http.put('/api/task/' + task.Id, service.dateValidation(task)).success(function() {
+			task = service.dateValidation(task);
+			$http.put('/api/task/' + task.Id, task).success(function() {
 				service.modifyTask(task);
 				if (callback) {
 					callback();
@@ -303,6 +306,29 @@ todoapp.factory('API', ['$http', '$location', 'Alerts',
 				}
 			});
 			return maxId + 1;
+		};
+
+		service.LoadConfig = function(callback) {
+			$http.get('/api/config').success(function(config) {
+				service.config = config;
+				if (callback) {
+					callback();
+				}
+			}).error(function(data, status, headers, config) {
+				service.config = null;
+				Alerts.addAlert("danger", 'Configuration settings could not be loaded. [HTTP Status Code: ' + status + ']');
+			});
+		};
+
+		service.UpdateConfig = function(config, callback) {
+			$http.put('/api/config', config).success(function(config) {
+				service.config = config;
+				if (callback) {
+					callback();
+				}
+			}).error(function(data, status, headers, config) {
+				Alerts.addAlert("danger", 'Configuration settings could not be updated. [HTTP Status Code: ' + status + ']');
+			});
 		};
 
 		return service;

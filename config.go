@@ -15,6 +15,7 @@ type Config struct {
 	SortOrder       []string
 	DeleteWarning   bool
 	ClearWarning    bool
+	Colors          map[string]string
 }
 
 func newConfig() *Config {
@@ -24,6 +25,14 @@ func newConfig() *Config {
 	config.SortOrder = []string{"Priority", "-DueDate", "Todo"}
 	config.DeleteWarning = true
 	config.ClearWarning = true
+	config.Colors = map[string]string{
+		"PriorityA": "#cc0000",
+		"PriorityB": "#ee9900",
+		"PriorityC": "#eeee00",
+		"PriorityD": "#3366ff",
+		"PriorityE": "#33cc33",
+		"PriorityF": "#cccccc",
+	}
 	return config
 }
 
