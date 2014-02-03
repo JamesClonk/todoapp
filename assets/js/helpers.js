@@ -4,26 +4,33 @@
 
 // helpers
 var dueDateClassHelper = function(date) {
-	var mdate = moment(date);
-	// too long ago, golang zero time
-	if (mdate.year() <= 1) {
+	var dt = new Date(date);
+	dt = new Date(dt.getFullYear(), dt.getMonth(), dt.getDate());
+	var now = new Date();
+	now = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+	// too long ago, probably golang zero time
+	if (dt.getFullYear() <= 1901) {
 		return "";
 	}
 
-	// red
-	else if (mdate.isBefore(moment().add('days', 1))) {
+	var diff = (dt.getTime() - now.getTime()) / (1000 * 60 * 60 * 24);
+	if (diff <= 1) {
 		return "red";
-	}
-	// orange
-	else if (mdate.isBefore(moment().add('days', 3))) {
+	} else if (diff <= 3) {
 		return "orange";
-	}
-	// green
-	else if (mdate.isBefore(moment().add('days', 13))) {
+	} else if (diff <= 13) {
 		return "green";
 	}
 	// default
 	return "gray";
+}
+
+var dateToYYYYMMDD = function dateToYYYYMMDD(date) {
+	var d = date.getDate();
+	var m = date.getMonth() + 1;
+	var y = date.getFullYear();
+	return '' + y + '-' + (m <= 9 ? '0' + m : m) + '-' + (d <= 9 ? '0' + d : d);
 }
 
 todoapp.run(['$rootScope', '$location', 'API', 'DataStore',
@@ -57,61 +64,49 @@ todoapp.run(['$rootScope', '$location', 'API', 'DataStore',
 
 // filters
 todoapp.filter('DueDateFormatFilter', function() {
-	moment.lang('en', {
-		relativeTime: {
-			future: "in %s",
-			past: "%s ago",
-			s: "seconds",
-			m: "a minute",
-			mm: "%d minutes",
-			h: "an hour",
-			hh: "%d hours",
-			d: "a day",
-			//dd: "%d days",
-			dd: function(number, withoutSuffix, key, isFuture) {
-				if (number >= 7 && number <= 13) {
-					return "1 week";
-				}
-				return number + " days";
-			},
-			M: "a month",
-			MM: "%d months",
-			y: "a year",
-			yy: "%d years"
-		}
-	});
-
 	return function(date) {
-		var mdate = moment(date).endOf('day');
-		// too long ago, golang zero time
-		if (mdate.year() <= 1) {
+		var dt = new Date(date);
+		dt = new Date(dt.getFullYear(), dt.getMonth(), dt.getDate());
+		var now = new Date();
+		now = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+		// too long ago, probably golang zero time
+		if (dt.getFullYear() <= 1901) {
 			return "";
 		}
 
-		var diff = mdate.diff(moment().endOf('day'), 'days')
+		var diff = (dt.getTime() - now.getTime()) / (1000 * 60 * 60 * 24);
 		if (diff == 0) {
-			return "today"
-		} else if (diff == -1) {
-			return "yesterday"
+			return "today";
 		} else if (diff == 1) {
-			return "tomorrow"
+			return "tomorrow";
+		} else if (diff == -1) {
+			return "yesterday";
+		} else if (diff > 0 && diff <= 6) {
+			return "in " + diff + " days";
+		} else if (diff > 6 && diff <= 13) {
+			return "in 1 week";
+		} else if (diff < 0 && diff >= -6) {
+			return Math.abs(diff) + " days ago";
+		} else if (diff < -6 && diff >= -10) {
+			return "1 week ago";
 		}
 
-		if (moment().hours() >= 12) {
-			return mdate.endOf('day').fromNow();
-		}
-		return mdate.startOf('day').fromNow();
+		return dateToYYYYMMDD(new Date(date));
 	}
 });
 
 todoapp.filter('DateFormatFilter', function() {
 	return function(date) {
-		var mdate = moment(date).endOf('day');
-		// too long ago, golang zero time
-		if (mdate.year() <= 1) {
+		var dt = new Date(date);
+		dt = new Date(dt.getFullYear(), dt.getMonth(), dt.getDate());
+
+		// too long ago, probably golang zero time
+		if (dt.getFullYear() <= 1901) {
 			return "";
 		}
-		return mdate.format('YYYY-MM-DD');
+
+		return dateToYYYYMMDD(new Date(date));
 	}
 });
 

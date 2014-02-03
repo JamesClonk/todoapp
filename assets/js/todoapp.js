@@ -143,11 +143,11 @@ todoapp.factory('API', ['$http', '$location', 'Alerts',
 		}
 
 		service.mapDueDate = function(dueDate) {
-			if (moment(dueDate).year() > 1) {
-				return moment(dueDate);
+			if ((new Date(dueDate)).getFullYear() > 1901) {
+				return new Date(dueDate);
 			}
 			// seems far enough into the future to be on the safe side..
-			return moment("9999-01-01");
+			return new Date("9999-01-01");
 		}
 
 		service.DefaultSortTasklist = function(data) {

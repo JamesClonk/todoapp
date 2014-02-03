@@ -143,7 +143,8 @@ todoappControllers.controller('taskCtrl', ['$scope', '$http', '$routeParams', '$
 			// need to create a copy of task, we don't want to modify the referenced original inside the tasklist
 			$scope.task = JSON.parse(JSON.stringify(API.GetTask($scope.taskId)));
 
-			if (moment($scope.task.DueDate).year() <= 1) {
+			// golang zero time
+			if ((new Date($scope.task.DueDate)).getFullYear() <= 1901) {
 				$scope.task.DueDate = null;
 			}
 

@@ -3,15 +3,16 @@
 (B) 2013-12-01 Outline chapter 4 @Computer +Novel Level:5 private:false due:2014-02-17
 (B) 2013-12-30 Create golang library test cases @Go +go-todotxt +golang
 (C) 2014-01-01 Create golang library documentation @Go +go-todotxt due:2014-02-10
-(C) 2014-01-01 Create golang library documentation @Go +go-todotxt due:2014-02-04
-(C) tomorrow @home due:2014-02-02
-(C) yesterday due:2014-01-31
-(C) 2 days ago due:2014-01-30
-(C) 3 days ago due:2014-01-29
-(C) in 2 days due:2014-02-03
-(D) in 3 days due:2014-02-04
-(C) in 4 days due:2014-02-05
+(C) 2014-01-01 Create golang library documentation @Go +go-todotxt due:2014-02-16
+(C) tomorrow @home due:2014-02-04
+(C) yesterday due:2014-02-02
+(C) 2 days ago due:2014-02-01
+(C) 3 days ago due:2014-01-31
+(C) in 2 days due:2014-02-05
+(D) in 3 days due:2014-02-06
+(C) in 4 days due:2014-02-07
 (A) 2012-01-30 Call Mom @Call @Phone +Family due:1999-01-19
 (E) Add cover sheets @Office +TPSReports
 Research self-publishing services +Novel due:2014-01-28
 (F) Research self-publishing services +Novel due:2013-03-01
+(C) 2014-02-03 today due:2014-02-03

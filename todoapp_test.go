@@ -566,7 +566,7 @@ func Test_todoapp_api_DeleteTasks(t *testing.T) {
 	Expect(t, response.Code, http.StatusOK)
 
 	body = response.Body.String()
-	Contain(t, body, `(F) 2014-02-02 Call dry cleaner @Home due:2014-02-19`)
+	Contain(t, body, `Call dry cleaner @Home due:2014-02-19`)
 	Contain(t, body, `"Id": 3`)
 	Contain(t, body, `"Id": 6`)
 	NotContain(t, body, `"Id": 0`)
