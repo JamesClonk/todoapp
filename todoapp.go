@@ -5,6 +5,8 @@
 package main
 
 import (
+	"errors"
+	"fmt"
 	todo "github.com/JamesClonk/go-todotxt"
 	"github.com/codegangsta/cli"
 	"github.com/codegangsta/martini"
@@ -90,12 +92,8 @@ func parseOptions(c *cli.Context) {
 	}
 
 	// check if file actually exists, otherwise create new file
-	if _, err := os.Stat(config.TodoTxtFilename); os.IsNotExist(err) {
-		file, err := os.Create(config.TodoTxtFilename)
-		if err != nil {
-			log.Fatalf("Todo.txt file could not be created: %v", err)
-		}
-		file.Close()
+	if err := checkAndCreateFile(config.TodoTxtFilename); err != nil {
+		log.Fatal(err)
 	}
 }
 
@@ -231,6 +229,18 @@ func setupRoutes(r martini.Router) {
 	})
 }
 
+func checkAndCreateFile(filename string) error {
+	// check if file exists, otherwise create new file
+	if _, err := os.Stat(filename); os.IsNotExist(err) {
+		file, err := os.Create(filename)
+		if err != nil {
+			return errors.New(fmt.Sprintf("%s could not be created: %v", filename, err))
+		}
+		file.Close()
+	}
+	return nil
+}
+
 func TodoAuth() http.HandlerFunc {
 	return auth.Basic("admin", "admin")
 }
@@ -238,6 +248,11 @@ func TodoAuth() http.HandlerFunc {
 // Add todotxt.TaskList to martini context
 func TaskList() martini.Handler {
 	return func(c martini.Context, r render.Render, config *Config) {
+		if err := checkAndCreateFile(config.TodoTxtFilename); err != nil {
+			r.HTML(http.StatusInternalServerError, "500", err)
+			return
+		}
+
 		tasks, err := todo.LoadFromFilename(config.TodoTxtFilename)
 		if err != nil {
 			r.HTML(http.StatusInternalServerError, "500", err)

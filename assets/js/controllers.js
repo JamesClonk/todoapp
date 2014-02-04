@@ -103,10 +103,14 @@ todoappControllers.controller('settingsCtrl', ['$scope', '$http', '$location', '
 				"PriorityE": "#33cc33",
 				"PriorityF": "#cccccc",
 			};
+			$scope.UpdateConfig();
 		}
 
 		$scope.UpdateConfig = function() {
 			API.UpdateConfig($scope.config);
+			API.LoadTasklist(function() {
+				$location.path("/settings");
+			});
 		}
 	}
 ]);
@@ -142,6 +146,7 @@ todoappControllers.controller('tasklistCtrl', ['$scope', '$http', '$location', '
 
 		$scope.AddTask = function() {
 			API.AddTask($scope.task);
+			$scope.task = {};
 		};
 
 		$scope.DeleteTask = function(task) {

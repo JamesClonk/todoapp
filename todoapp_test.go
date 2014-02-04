@@ -14,7 +14,6 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"os"
-	"runtime"
 	"testing"
 	"time"
 )
@@ -184,22 +183,9 @@ func Test_todoapp_404(t *testing.T) {
 }
 
 func Test_todoapp_500(t *testing.T) {
-	os.Remove("testdata/test_not_exists.config")
-	defer os.Remove("testdata/test_not_exists.config")
-
 	m := setupMartini()
 
-	// set todo.txt file to 'testdata/does_not_exist.txt'
-	config, err := readConfigurationFile("testdata/test_not_exists.config")
-	if err != nil {
-		t.Fatal(err)
-	}
-	config.TodoTxtFilename = "testdata/does_not_exist.txt"
-	if err := config.writeConfigurationFile("testdata/test_not_exists.config"); err != nil {
-		t.Fatal(err)
-	}
-
-	m.Use(ConfigOptions("testdata/test_not_exists.config"))
+	m.Use(ConfigOptions("testdata/broken.config"))
 	m.Use(TaskList())
 
 	response := httptest.NewRecorder()
@@ -213,34 +199,8 @@ func Test_todoapp_500(t *testing.T) {
 
 	body := response.Body.String()
 	Contain(t, body, `<h1>500 - Internal Server Error</h1>`)
-	if runtime.GOOS == "windows" {
-		Contain(t, body, `<h5>open testdata/does_not_exist.txt: The system cannot find the file specified.</h5>`)
-	} else {
-		Contain(t, body, `<h5>open testdata/does_not_exist.txt: no such file or directory</h5>`)
-	}
-
-	// change todo.txt file to 'testdata/does_really_not_exist.txt'
-	config.TodoTxtFilename = "testdata/does_really_not_exist.txt"
-	if err := config.writeConfigurationFile("testdata/test_not_exists.config"); err != nil {
-		t.Fatal(err)
-	}
-
-	response = httptest.NewRecorder()
-	req, err = http.NewRequest("GET", "http://localhost:4005/", nil)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	m.ServeHTTP(response, req)
-	Expect(t, response.Code, http.StatusInternalServerError)
-
-	body = response.Body.String()
-	Contain(t, body, `<h1>500 - Internal Server Error</h1>`)
-	if runtime.GOOS == "windows" {
-		Contain(t, body, `<h5>open testdata/does_really_not_exist.txt: The system cannot find the file specified.</h5>`)
-	} else {
-		Contain(t, body, `<h5>open testdata/does_really_not_exist.txt: no such file or directory</h5>`)
-	}
+	Contain(t, body, `<h5>invalid character`)
+	Contain(t, body, `looking for beginning of value</h5>`)
 }
 
 func Test_todoapp_api_GetTasks(t *testing.T) {
