@@ -10,7 +10,6 @@ import (
 	todo "github.com/JamesClonk/go-todotxt"
 	"github.com/codegangsta/cli"
 	"github.com/codegangsta/martini"
-	"github.com/codegangsta/martini-contrib/auth"
 	"github.com/codegangsta/martini-contrib/binding"
 	"github.com/codegangsta/martini-contrib/render"
 	"log"
@@ -239,10 +238,6 @@ func checkAndCreateFile(filename string) error {
 		file.Close()
 	}
 	return nil
-}
-
-func TodoAuth() http.HandlerFunc {
-	return auth.Basic("admin", "admin")
 }
 
 // Add todotxt.TaskList to martini context

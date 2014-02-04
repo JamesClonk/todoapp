@@ -242,7 +242,7 @@ Media Queries
 	div.row > div.quickadd, div.taskedit, div.tools {
 		margin-top: 60px;
 	}
-	div.tools > h1, div.tools > h2, div.tools > h3, div.tools > h4, div.tools > h5, div.tools > h6, div.tools > p {
+	div.tools > h1, div.tools > h2, div.tools > h3, div.tools > h4, div.tools > h5, div.tools > h6, div.tools > div {
 		margin-left: 5px;
 	}
 }

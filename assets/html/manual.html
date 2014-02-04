@@ -2,9 +2,12 @@
 	<h1>User Manual</h1>
 
 	<br/>
-	<p><strong>todoapp</strong> is browser-based <a href="http://todotxt.com/">Todo.txt <i class="fa fa-share-square-o"></i></a> application.</p>
 
-	<p>A description of the Todo.txt file format can be found here: <a href="https://github.com/ginatrapani/todo.txt-cli/wiki/The-Todo.txt-Format">The Todo.txt Format <i class="fa fa-share-square-o"></i></a></p>
+	<div class="row">
+		<h3>Description</h3>
+		<p><strong>todoapp</strong> is browser-based <a href="http://todotxt.com/">Todo.txt <i class="fa fa-share-square-o"></i></a> application.</p>
+		<p>A description of the Todo.txt file format can be found here: <a href="https://github.com/ginatrapani/todo.txt-cli/wiki/The-Todo.txt-Format">The Todo.txt Format <i class="fa fa-share-square-o"></i></a></p>
+	</div>
 
 	<br/>
 
@@ -77,4 +80,19 @@
 			</div>
 		</div>
 	</div>
+
+	<br/>
+
+	<div class="row">
+		<h3>Security</h3>
+		<p><strong>todoapp</strong> intentionally does not provide any security mechanism to restrict access to it. It (tries to) follows the Unix philosophy of being short, simple, clear, modular, and composable.</p>
+		<p>If you wish to restrict access to <strong>todoapp</strong> only for localhost, you can simply setup the following <i>iptables</i> filter rule:</p>
+		<code>iptables -A INPUT -i lo -p tcp --dport 4004 -j ACCEPT</code><br/>
+		<code>iptables -A INPUT -p tcp --dport 4004 -j DROP</code>
+		<br/>
+		<br/>
+		<p>Similarly, if you want to run <strong>todoapp</strong> on a remote host and have it reachable by the outside world, you could for example setup <a href="http://nginx.org/">nginx <i class="fa fa-share-square-o"></i></a> as a reverse proxy in front of <strong>todoapp</strong> and configure it to use HTTP Basic Auth.</p>
+	</div>
+
+	<br/>
 </div>
