@@ -18,7 +18,7 @@ This will compile and install the *todoapp* binary into your $GOPATH/bin directo
 
 ## Requirements
 
-todoapp requires [Go 1.2](http://golang.org/doc/install) or higher.
+*todoapp* requires [Go 1.2](http://golang.org/doc/install) or higher.
 
 ## Usage
 
