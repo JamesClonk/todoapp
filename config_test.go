@@ -23,7 +23,6 @@ func Test_config_readConfigurationFile(t *testing.T) {
 	}
 	// should be defaults, since file didn't exist
 	Expect(t, config.TodoTxtFilename, "todo.txt")
-	Expect(t, config.SortOrder, []string{"Priority", "-DueDate", "Todo"})
 	Expect(t, config.DeleteWarning, true)
 	Expect(t, config.ClearWarning, true)
 	Expect(t, config.Colors["PriorityA"], "#cc0000")
@@ -39,7 +38,6 @@ func Test_config_readConfigurationFile(t *testing.T) {
 		t.Fatal(err)
 	}
 	Expect(t, config.TodoTxtFilename, "testdata/todo.txt")
-	Expect(t, config.SortOrder, []string{"-DueDate", "Priority", "Todo"})
 	Expect(t, config.DeleteWarning, false)
 	Expect(t, config.ClearWarning, false)
 	Expect(t, config.Colors["PriorityA"], "#ff0000")

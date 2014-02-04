@@ -12,7 +12,6 @@ import (
 
 type Config struct {
 	TodoTxtFilename string
-	SortOrder       []string
 	DeleteWarning   bool
 	ClearWarning    bool
 	Colors          map[string]string
@@ -22,7 +21,6 @@ func newConfig() *Config {
 	config := &Config{}
 	// defaults
 	config.TodoTxtFilename = "todo.txt"
-	config.SortOrder = []string{"Priority", "-DueDate", "Todo"}
 	config.DeleteWarning = true
 	config.ClearWarning = true
 	config.Colors = map[string]string{

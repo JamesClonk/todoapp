@@ -104,7 +104,6 @@ todoappControllers.controller('settingsCtrl', ['$scope', '$http', '$location', '
 
 		$scope.ResetSettings = function() {
 			$scope.config.TodoTxtFilename = "todo.txt";
-			$scope.config.SortOrder = ["Priority", "-DueDate", "Todo"];
 			$scope.config.DeleteWarning = true;
 			$scope.config.ClearWarning = true;
 			$scope.config.Colors = {

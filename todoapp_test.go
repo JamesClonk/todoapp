@@ -559,7 +559,6 @@ func Test_todoapp_api_GetConfig(t *testing.T) {
 		t.Fatal(err)
 	}
 	Expect(t, config.TodoTxtFilename, "testdata/todo.txt")
-	Expect(t, config.SortOrder, []string{"-DueDate", "Priority", "Todo"})
 	Expect(t, config.DeleteWarning, false)
 	Expect(t, config.ClearWarning, false)
 	Expect(t, config.Colors["PriorityA"], "#ff0000")
@@ -578,7 +577,6 @@ func Test_todoapp_api_PutConfig(t *testing.T) {
 		t.Fatal(err)
 	}
 	Expect(t, config.TodoTxtFilename, "testdata/todo.txt")
-	Expect(t, config.SortOrder, []string{"-DueDate", "Priority", "Todo"})
 	Expect(t, config.DeleteWarning, false)
 	Expect(t, config.ClearWarning, false)
 	Expect(t, config.Colors["PriorityA"], "#ff0000")
@@ -590,7 +588,6 @@ func Test_todoapp_api_PutConfig(t *testing.T) {
 
 	config.TodoTxtFilename = "junk!"
 	config.DeleteWarning = true
-	config.SortOrder = []string{"Something", "Else", "Entirely"}
 	config.Colors["PriorityA"] = "#aa0000"
 	config.Colors["PriorityB"] = "#00bb00"
 	config.Colors["PriorityC"] = "#0000cc"
@@ -620,7 +617,6 @@ func Test_todoapp_api_PutConfig(t *testing.T) {
 		t.Fatal(err)
 	}
 	Expect(t, config1.TodoTxtFilename, "junk!")
-	Expect(t, config1.SortOrder, []string{"Something", "Else", "Entirely"})
 	Expect(t, config1.DeleteWarning, true)
 	Expect(t, config1.ClearWarning, false)
 	Expect(t, config1.Colors["PriorityA"], "#aa0000")
@@ -635,7 +631,6 @@ func Test_todoapp_api_PutConfig(t *testing.T) {
 		t.Fatal(err)
 	}
 	Expect(t, config2.TodoTxtFilename, "junk!")
-	Expect(t, config2.SortOrder, []string{"Something", "Else", "Entirely"})
 	Expect(t, config2.DeleteWarning, true)
 	Expect(t, config2.ClearWarning, false)
 	Expect(t, config2.Colors["PriorityA"], "#aa0000")
