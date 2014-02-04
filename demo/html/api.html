@@ -1,0 +1,145 @@
+<div class="tools">
+	<h1>API Guide</h1>
+
+	<div class="row">
+		<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+			<div class="panel panel-primary">
+				<div class="panel-heading">
+					<h3 class="panel-title">todoapp provides the following resources and HTTP methods on them:</h3>
+				</div>
+				<table class="table table-striped">
+					<thead>
+						<tr>
+							<th>URI</th>
+							<th>Method</th>
+							<th>Description</th>
+						</tr>
+					</thead>
+
+					<tbody>
+						<tr>
+							<td><a href="/api/task/1">/api/task/:id</a></td>
+							<td>GET</td>
+							<td>
+								Returns the task identified by given task id.
+							</td>
+						</tr>
+						<tr>
+							<td><a href="/api/task/1">/api/task</a></td>
+							<td>POST</td>
+							<td>
+								Creates a new task with sent form / json data and adds it to the list. 
+								Afterwards it will store the updated list into the defined <strong>todo.txt</strong> file. 
+							</td>
+						</tr>
+						<tr>
+							<td><a href="/api/task/1">/api/task/:id</a></td>
+							<td>PUT</td>
+							<td>
+								Updates the task identified by given task id with sent form / json data.
+								Afterwards it will store the updated list into the defined <strong>todo.txt</strong> file. 
+							</td>
+						</tr>
+						<tr>
+							<td><a href="/api/task/1">/api/task/:id</a></td>
+							<td>DELETE</td>
+							<td>
+								Deletes the task identified by given task id from the list.
+								Afterwards it will store the updated list into the defined <strong>todo.txt</strong> file. 
+							</td>
+						</tr>
+						<tr>
+							<td><a href="/api/tasks">/api/tasks</a></td>
+							<td>GET</td>
+							<td>
+								Returns a complete list of all tasks.
+								The data is read from a <strong>todo.txt</strong> file, 
+								as defined per the configuration setting <i>TodoTxtFilename</i>, 
+								or by the commandline switch <kbd>--file</kbd>.
+							</td>
+						</tr>
+						<tr>
+							<td><a href="/api/tasks">/api/tasks</a></td>
+							<td>DELETE</td>
+							<td>
+								Removes (only) closed / completed tasks from the list.
+								Afterwards it will store the updated list into the defined <strong>todo.txt</strong> file. 
+							</td>
+						</tr>
+						<tr>
+							<td><a href="/api/config">/api/config</a></td>
+							<td>GET</td>
+							<td>
+								Returns the current configuration settings. 
+								By default these are read and stored in <strong>todoapp.config</strong> in the directory where the application was started.
+								This filename can also be specified with a commandline switch, <kbd>--config</kbd>.
+							</td>
+						</tr>
+						<tr>
+							<td><a href="/api/config">/api/config</a></td>
+							<td>PUT</td>
+							<td>
+								Updates the configuration settings. 
+								This will store the settings into the <strong>todoapp.config</strong> file.
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+
+	<br/>
+
+	<h3>API Example output:</h3>
+
+	<div class="row">
+		<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+			<div class="panel panel-default">
+				<div class="panel-body">
+					<p><span class="label label-info">JSON</span>&nbsp;&nbsp;Task:</p>
+<pre>{
+  "Id": 1,
+  "Original": "(A) 2013-02-22 Pick up milk! @GroceryStore",
+  "Todo": "Pick up milk!",
+  "Priority": "A",
+  "Projects": null,
+  "Contexts": [
+    "Grocery Store"
+  ],
+  "AdditionalTags": null,
+  "CreatedDate": "2013-02-22T00:00:00Z",
+  "DueDate": "2013-02-28T00:00:00Z",
+  "CompletedDate": "0001-01-01T00:00:00Z",
+  "Completed": false
+}</pre>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="row">
+		<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+			<div class="panel panel-default">
+				<div class="panel-body">
+					<p><span class="label label-info">JSON</span>&nbsp;&nbsp;Configuration:</p>
+<pre>{
+  "TodoTxtFilename": "todo.txt",
+  "DeleteWarning": true,
+  "ClearWarning": true,
+  "Colors": {
+    "PriorityA": "#cc0000",
+    "PriorityB": "#ee9900",
+    "PriorityC": "#eeee00",
+    "PriorityD": "#3366ff",
+    "PriorityE": "#33cc33",
+    "PriorityF": "#cccccc"
+  }
+}</pre>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<br/>

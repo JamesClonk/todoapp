@@ -1,0 +1,98 @@
+<div class="tools">
+	<h1>User Manual</h1>
+
+	<br/>
+
+	<div class="row">
+		<h3>Description</h3>
+		<p><strong>todoapp</strong> is browser-based <a href="http://todotxt.com/">Todo.txt <i class="fa fa-share-square-o"></i></a> application.</p>
+		<p>A description of the Todo.txt file format can be found here: <a href="https://github.com/ginatrapani/todo.txt-cli/wiki/The-Todo.txt-Format">The Todo.txt Format <i class="fa fa-share-square-o"></i></a></p>
+	</div>
+
+	<br/>
+
+	<div class="row">
+		<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+			<div class="panel panel-primary">
+				<div class="panel-heading">
+					<h3 class="panel-title">Commandline flags for todoapp</h3>
+				</div>
+				<table class="table table-striped">
+					<thead>
+						<tr>
+							<th>Flag</th>
+							<th>Default</th>
+							<th>Description</th>
+						</tr>
+					</thead>
+
+					<tbody>
+						<tr>
+							<td><kbd>-f</kbd>, <kbd>--file</kbd>, </td>
+							<td>todo.txt</td>
+							<td>
+								Specify the Todo.txt file to use for reading and storing tasks from. If this parameter is not given, <strong>todoapp</strong> will use <i>todo.txt</i> from the current directory where it was started.
+							</td>
+						</tr>
+						<tr>
+							<td><kbd>-c</kbd>, <kbd>--config</kbd>, </td>
+							<td>todoapp.config</td>
+							<td>
+								Specify the configuration file to use for <strong>todoapp</strong>. If this parameter is not give, <strong>todoapp</strong> will automatically create a new file <i>todoapp.config</i> in the current directory where it was started.
+							</td>
+						</tr>
+						<tr>
+							<td><kbd>-p</kbd>, <kbd>--port</kbd>, </td>
+							<td>4004</td>
+							<td>
+								Specify the port where the <strong>todoapp</strong> webserver will listen to.
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+
+	<br/>
+
+	<div class="row">
+		<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+			<div class="panel panel-primary">
+				<div class="panel-heading">
+					<h3 class="panel-title">Configuration file for todoapp</h3>
+				</div>
+				<div class="panel-body">
+<pre>{
+  "TodoTxtFilename": "todo.txt",
+  "DeleteWarning": true,
+  "ClearWarning": true,
+  "Colors": {
+    "PriorityA": "#cc0000",
+    "PriorityB": "#ee9900",
+    "PriorityC": "#eeee00",
+    "PriorityD": "#3366ff",
+    "PriorityE": "#33cc33",
+    "PriorityF": "#cccccc"
+  }
+}</pre>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<br/>
+
+	<div class="row">
+		<h3>Security</h3>
+		<p><strong>todoapp</strong> intentionally does not provide any security mechanism to restrict access to it. It (tries to) follows the Unix philosophy of being short, simple, clear, modular, and composable.</p>
+		<p>If you wish to restrict access to <strong>todoapp</strong> only for localhost, you can simply setup the following <i>iptables</i> filter rule:</p>
+		<code>iptables -A INPUT -i lo -p tcp --dport 4004 -j ACCEPT</code><br/>
+		<code>iptables -A INPUT -p tcp --dport 4004 -j DROP</code>
+		<br/>
+		<br/>
+		<p>Similarly, if you want to run <strong>todoapp</strong> on a remote host and have it reachable by the outside world, you could for example setup <a href="http://nginx.org/">nginx <i class="fa fa-share-square-o"></i></a> as a reverse proxy in front of <strong>todoapp</strong> and configure it to use HTTP Basic Auth.</p>
+	</div>
+
+	<br/>
+</div>

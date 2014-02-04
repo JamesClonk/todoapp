@@ -1,0 +1,84 @@
+<form ng-submit="UpdateConfig()">
+	<div class="tools">
+
+		<h1>Settings Page</h1>
+
+		<br/>
+
+		<h3>Files:</h3>
+		<div class="row">
+			<div class="form-group col-xs-12 col-sm-12 col-md-12 col-lg-12">
+				<div class="col-xs-10 col-sm-8 col-md-6 col-lg-6">
+					<label for="todotxtfile" class="control-label"><span class="label label-primary">Todo.txt File:</span>&nbsp;</label><br/>
+					<input id="todotxtfile" class="form-control" type="text" ng-model="config.TodoTxtFilename">
+				</div>
+			</div>
+		</div>
+
+		<br/>
+
+		<h3>Warnings:</h3>
+		<div class="row">
+			<div class="form-group col-xs-12 col-sm-12 col-md-12 col-lg-12">
+				<div class="col-xs-10 col-sm-8 col-md-6 col-lg-6">
+					<label>
+						<input type="checkbox" ng-model="config.DeleteWarning">&nbsp;Warn before deleting a task?
+					</label>
+					<br/>
+					<label>
+						<input type="checkbox" ng-model="config.ClearWarning">&nbsp;Warn before clearing the tasklist?
+					</label>
+				</div>
+			</div>
+		</div>
+
+		<br/>
+
+		<h3>Colors:</h3>
+		<div class="row">
+			<div class="form-group col-xs-12 col-sm-12 col-md-12 col-lg-12">
+				<div class="col-xs-4 col-sm-4 col-md-4 col-lg-4">
+					<label for="PriorityA" class="control-label"><span class="label label-primary">Priority A</span>&nbsp;</label><br/>
+					<input id="PriorityA" class="form-control" colorpicker="hex" ng-model="config.Colors['PriorityA']" style="background-color: {{config.Colors['PriorityA']}}">
+				</div>
+				<div class="col-xs-4 col-sm-4 col-md-4 col-lg-4">
+					<label for="PriorityB" class="control-label"><span class="label label-primary">Priority B</span>&nbsp;</label><br/>
+					<input id="PriorityB" class="form-control" colorpicker="hex" ng-model="config.Colors['PriorityB']" style="background-color: {{config.Colors['PriorityB']}}">
+				</div>
+				<div class="col-xs-4 col-sm-4 col-md-4 col-lg-4">
+					<label for="PriorityC" class="control-label"><span class="label label-primary">Priority C</span>&nbsp;</label><br/>
+					<input id="PriorityC" class="form-control" colorpicker="hex" ng-model="config.Colors['PriorityC']" style="background-color: {{config.Colors['PriorityC']}}">
+				</div>
+				<div class="col-xs-4 col-sm-4 col-md-4 col-lg-4">
+					<label for="PriorityD" class="control-label"><span class="label label-primary">Priority D</span>&nbsp;</label><br/>
+					<input id="PriorityD" class="form-control" colorpicker="hex" ng-model="config.Colors['PriorityD']" style="background-color: {{config.Colors['PriorityD']}}">
+				</div>
+				<div class="col-xs-4 col-sm-4 col-md-4 col-lg-4">
+					<label for="PriorityE" class="control-label"><span class="label label-primary">Priority E</span>&nbsp;</label><br/>
+					<input id="PriorityE" class="form-control" colorpicker="hex" ng-model="config.Colors['PriorityE']" style="background-color: {{config.Colors['PriorityE']}}">
+				</div>
+				<div class="col-xs-4 col-sm-4 col-md-4 col-lg-4">
+					<label for="PriorityF" class="control-label"><span class="label label-primary">Priority F+</span>&nbsp;</label><br/>
+					<input id="PriorityF" class="form-control" colorpicker="hex" ng-model="config.Colors['PriorityF']" style="background-color: {{config.Colors['PriorityF']}}">
+				</div>
+			</div>
+		</div>
+
+		<br/>
+
+		<div class="row">
+			<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+				<button type="button" class="btn btn-default" ng-click="CancelSettings()"><span class="glyphicon glyphicon-remove"></span>&nbsp;&nbsp;Cancel</button>
+				&nbsp;&nbsp;
+				<button type="button" class="btn btn-default" ng-click="ReloadSettings()"><span class="glyphicon glyphicon-refresh"></span>&nbsp;&nbsp;Reload</button>
+				&nbsp;&nbsp;
+				<button type="button" class="btn btn-default" ng-click="ResetSettings()"><span class="glyphicon glyphicon-open"></span>&nbsp;&nbsp;Reset</button>
+				&nbsp;&nbsp;
+				<button type="submit" class="btn btn-default"><span class="glyphicon glyphicon-save"></span>&nbsp;&nbsp;Save</button>
+			</div>
+		</div>
+
+		<br/>
+
+	</div>
+</form>
