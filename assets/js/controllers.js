@@ -27,8 +27,8 @@ todoappControllers.controller('alertCtrl', ['$scope', 'Alerts',
 ]);
 
 // controller for navbar
-todoappControllers.controller('navbarCtrl', ['$scope', 'API', 'DataStore',
-	function($scope, API, DataStore) {
+todoappControllers.controller('navbarCtrl', ['$scope', '$modal', 'API', 'DataStore',
+	function($scope, $modal, API, DataStore) {
 		$scope.count = API.tasklist.length;
 		$scope.contexts = DataStore.contexts;
 		$scope.projects = DataStore.projects;
@@ -63,9 +63,21 @@ todoappControllers.controller('navbarCtrl', ['$scope', 'API', 'DataStore',
 		};
 
 		$scope.ClearTasklist = function() {
-			API.ClearTasklist(function() {
-				DataStore.Goto("/"); // causes a redirect and forces view to update
-			});
+			if (API.config.ClearWarning == false) {
+				API.ClearTasklist(function() {
+					DataStore.Goto("/"); // causes a redirect and forces view to update
+				});
+			} else {
+				var modalInstance = $modal.open({
+					templateUrl: 'modalClear.html',
+					controller: modalInstanceCtrl
+				});
+				modalInstance.result.then(function() {
+					API.ClearTasklist(function() {
+						DataStore.Goto("/"); // causes a redirect and forces view to update
+					});
+				}, function() {});
+			}
 		};
 	}
 ]);
@@ -117,8 +129,8 @@ todoappControllers.controller('settingsCtrl', ['$scope', '$http', '$location', '
 
 
 // controller for list of tasks
-todoappControllers.controller('tasklistCtrl', ['$scope', '$http', '$location', 'Alerts', 'API', 'DataStore',
-	function($scope, $http, $location, Alerts, API, DataStore) {
+todoappControllers.controller('tasklistCtrl', ['$scope', '$http', '$modal', '$location', 'Alerts', 'API', 'DataStore',
+	function($scope, $http, $modal, $location, Alerts, API, DataStore) {
 		$scope.predicate = 'Priority';
 		$scope.tasklist = API.tasklist;
 		$scope.query = DataStore.query;
@@ -150,7 +162,17 @@ todoappControllers.controller('tasklistCtrl', ['$scope', '$http', '$location', '
 		};
 
 		$scope.DeleteTask = function(task) {
-			API.DeleteTask(task);
+			if (API.config.DeleteWarning == false) {
+				API.DeleteTask(task);
+			} else {
+				var modalInstance = $modal.open({
+					templateUrl: 'modalDelete.html',
+					controller: modalInstanceCtrl
+				});
+				modalInstance.result.then(function() {
+					API.DeleteTask(task);
+				}, function() {});
+			}
 		};
 
 		// custom sort predicate function needed to deal with "empty" priorities and due dates
@@ -263,3 +285,12 @@ todoappControllers.controller('taskCtrl', ['$scope', '$http', '$routeParams', '$
 		$scope.loadTask();
 	}
 ]);
+
+var modalInstanceCtrl = function($scope, $modalInstance) {
+	$scope.ok = function() {
+		$modalInstance.close();
+	};
+	$scope.cancel = function() {
+		$modalInstance.dismiss('cancel');
+	};
+};

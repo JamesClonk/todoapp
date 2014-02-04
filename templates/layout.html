@@ -130,5 +130,31 @@ file, You can obtain one at http://mozilla.org/MPL/2.0/.
 	{[{ yield }]}
 </div>
 
+<script type="text/ng-template" id="modalDelete.html">
+	<div class="modal-header">
+		<h4 class="modal-title">Delete Task?</h4>
+	</div>
+	<div class="modal-body">
+		<p>Do you really want to delete this task?</p>
+	</div>
+	<div class="modal-footer">
+		<button type="button" class="btn btn-warning" ng-click="cancel()" data-dismiss="modal">NO / Cancel</button>
+		<button type="button" class="btn btn-danger" ng-click="ok()">YES / Ok</button>
+	</div>
+</script>
+
+<script type="text/ng-template" id="modalClear.html">
+	<div class="modal-header">
+		<h4 class="modal-title">Clear Tasklist?</h4>
+	</div>
+	<div class="modal-body">
+		<p>Do you really want to clear the tasklist of all completed tasks?</p>
+	</div>
+	<div class="modal-footer">
+		<button type="button" class="btn btn-warning" ng-click="cancel()" data-dismiss="modal">NO / Cancel</button>
+		<button type="button" class="btn btn-danger" ng-click="ok()">YES / Ok</button>
+	</div>
+</script>
+
 </body>
 </html>
