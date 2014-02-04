@@ -1,7 +1,6 @@
 language: go
 go:
   - 1.2
-  - tip
 env:
   - GOARCH=amd64
 notifications:
