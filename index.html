@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8' />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+    <meta name="description" content="todoapp : A browser-based Todo.txt application" />
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>todoapp</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/JamesClonk/todoapp">View on GitHub</a>
+
+          <h1 id="project_title">todoapp</h1>
+          <h2 id="project_tagline">A browser-based Todo.txt application</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/JamesClonk/todoapp/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/JamesClonk/todoapp/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <h1>
+<a name="todoapp" class="anchor" href="#todoapp"><span class="octicon octicon-link"></span></a>todoapp</h1>
+
+<p>A browser-based <a href="http://todotxt.com/">Todo.txt</a> application,<br>
+written in <a href="http://golang.org/">Golang</a> and <a href="http://angularjs.org/">AngularJS</a>.</p>
+
+<p><a href="https://travis-ci.org/JamesClonk/todoapp"><img src="https://travis-ci.org/JamesClonk/todoapp.png?branch=master" alt="Build Status"></a></p>
+
+<p><a href="http://jamesclonk.github.io/todoapp/">Demo Application</a></p>
+
+<p><img src="https://github.com/JamesClonk/todoapp/raw/master/todoapp.jpg" alt="todoapp Screenshot" title="todoapp Screenshot"></p>
+
+<h2>
+<a name="installation" class="anchor" href="#installation"><span class="octicon octicon-link"></span></a>Installation</h2>
+
+<pre><code>$ go get github.com/JamesClonk/todoapp
+</code></pre>
+
+<p>This will compile and install the <em>todoapp</em> binary into your $GOPATH/bin directory.</p>
+
+<h2>
+<a name="requirements" class="anchor" href="#requirements"><span class="octicon octicon-link"></span></a>Requirements</h2>
+
+<p>todoapp requires <a href="http://golang.org/doc/install">Go 1.2</a> or higher.</p>
+
+<h2>
+<a name="usage" class="anchor" href="#usage"><span class="octicon octicon-link"></span></a>Usage</h2>
+
+<p>Go to the directory where you store or wish to store your Todo.txt file and simply start <em>todoapp</em>, then open your browser and point it to http://localhost:4004/</p>
+
+<pre><code>$ todoapp
+</code></pre>
+
+<p><em>todoapp</em> also has some commandline options:</p>
+
+<pre><code>$ todoapp -h
+</code></pre>
+
+<pre><code>NAME:
+   todoapp - A browser-based Todo.txt application
+
+USAGE:
+   todoapp [global options] command [command options] [arguments...]
+
+VERSION:
+   1.0.0
+
+COMMANDS:
+   help, h      Shows a list of commands or help for one command
+
+GLOBAL OPTIONS:
+   --port, -p '4004'                    port for the todoapp web server
+   --file, -f 'todo.txt'                filename/path of todo.txt file to use
+   --config, -c 'todoapp.config'        filename/path of configuration file to use
+   --version, -v                        print the version
+   --help, -h                           show help
+</code></pre>
+
+<h2>
+<a name="documentation" class="anchor" href="#documentation"><span class="octicon octicon-link"></span></a>Documentation</h2>
+
+<p>See under "Tools" section on the <a href="http://jamesclonk.github.io/todoapp/">demo application</a> for ruther information.</p>
+
+<h2>
+<a name="license" class="anchor" href="#license"><span class="octicon octicon-link"></span></a>License</h2>
+
+<p>The source files are distributed under the <a href="http://mozilla.org/MPL/2.0/">Mozilla Public License, version 2.0</a>, unless otherwise noted.<br>
+Please read the <a href="http://www.mozilla.org/MPL/2.0/FAQ.html">FAQ</a> if you have further questions regarding the license. </p>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">todoapp maintained by <a href="https://github.com/JamesClonk">JamesClonk</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+    
+
+  </body>
+</html>
