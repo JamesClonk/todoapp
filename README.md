@@ -6,7 +6,7 @@ written in [Golang](http://golang.org/) and [AngularJS](http://angularjs.org/).
 
 [![Build Status](https://travis-ci.org/JamesClonk/todoapp.png?branch=master)](https://travis-ci.org/JamesClonk/todoapp)
 
-[Demo Application](http://jamesclonk.github.io/todoapp/)
+[Demo Application](http://jamesclonk.github.io/todoapp/demo/)
 
 ![todoapp Screenshot](https://github.com/JamesClonk/todoapp/raw/master/todoapp.jpg "todoapp Screenshot")
 
@@ -53,7 +53,7 @@ GLOBAL OPTIONS:
 
 ## Documentation
 
-See under "Tools" section on the [demo application](http://jamesclonk.github.io/todoapp/) for ruther information.
+See under "Tools" section on the [demo application](http://jamesclonk.github.io/todoapp/demo/) for further information.
 
 ## License
 
