@@ -52,7 +52,7 @@
 					<td class="toggle"><i class="fa fa-square-o fa-lg pointer" ng-click="ToggleTaskCompletion(task)"></td>
 					<td class="priority" style="background-color: {{GetTaskColor(task.Priority)}};">{{task.Priority}}</td><!--priority{{task.Priority}}-->
 					<td class="todo">
-						<a href="/#/task/{{task.Id}}" class="task">{{task.Todo}}</a>
+						<a href="#/task/{{task.Id}}" class="task">{{task.Todo}}</a>
 						<a class="context" ng-repeat="context in task.Contexts" ng-click="SetFilterGroup('Context',context)">@{{context}}&nbsp;</a>
 						<a class="project" ng-repeat="project in task.Projects" ng-click="SetFilterGroup('Project',project)">+{{project}}&nbsp;</a>
 						<span class="createdDate">{{task.CreatedDate | DateFormatFilter}}</span>
@@ -62,7 +62,7 @@
 						<div class="dropdown">
 							<button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown"><i class="fa fa-caret-down fa-fw"></i></button>
 							<ul class="dropdown-menu dropdown-menu-right" role="menu">
-								<li><a role="menuitem" href="/#/task/{{task.Id}}"><span class="glyphicon glyphicon-edit"></span>&nbsp;&nbsp;Edit Task</a></li>
+								<li><a role="menuitem" href="#/task/{{task.Id}}"><span class="glyphicon glyphicon-edit"></span>&nbsp;&nbsp;Edit Task</a></li>
 								<li class="divider"></li>
 								<li><a role="menuitem" ng-click="DeleteTask(task)"><span class="glyphicon glyphicon-remove"></span>&nbsp;&nbsp;Delete Task</a></li>
 							</ul>

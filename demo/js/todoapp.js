@@ -14,22 +14,22 @@ todoapp.config(['$routeProvider',
 	function($routeProvider) {
 		$routeProvider.
 		when('/settings', {
-			templateUrl: 'http://jamesclonk.github.io/todoapp/demo/html/settings.html',
+			templateUrl: 'html/settings.html',
 			controller: 'settingsCtrl'
 		}).
 		when('/tasks', {
-			templateUrl: 'http://jamesclonk.github.io/todoapp/demo/html/tasks.html',
+			templateUrl: 'html/tasks.html',
 			controller: 'tasklistCtrl'
 		}).
 		when('/task/:taskId', {
-			templateUrl: 'http://jamesclonk.github.io/todoapp/demo/html/task.html',
+			templateUrl: 'html/task.html',
 			controller: 'taskCtrl'
 		}).
 		when('/doc/user', {
-			templateUrl: 'http://jamesclonk.github.io/todoapp/demo/html/manual.html'
+			templateUrl: 'html/manual.html'
 		}).
 		when('/doc/api', {
-			templateUrl: 'http://jamesclonk.github.io/todoapp/demo/html/api.html'
+			templateUrl: 'html/api.html'
 		}).
 		otherwise({
 			redirectTo: '/tasks'
@@ -160,7 +160,7 @@ todoapp.factory('API', ['$http', '$location', 'Alerts',
 		};
 
 		service.LoadTasklist = function(callback) {
-			$http.get('http://jamesclonk.github.io/todoapp/demo/tasks.json').success(function(data) {
+			$http.get('tasks.json').success(function(data) {
 				service.DefaultSortTasklist(data);
 				service.tasklist = data;
 				if (callback) {
@@ -172,15 +172,21 @@ todoapp.factory('API', ['$http', '$location', 'Alerts',
 		};
 
 		service.ClearTasklist = function(callback) {
-			$http.delete('http://jamesclonk.github.io/todoapp/demo/tasks.json').success(function(data) {
-				service.DefaultSortTasklist(data);
-				service.tasklist = data;
-				if (callback) {
-					callback();
+			var toClear = [];
+			for (var i = 0; i < service.tasklist.length; i++) {
+				if (service.tasklist[i].Completed) {
+					toClear.push(service.tasklist[i]);
+					break;
 				}
-			}).error(function(data, status, headers, config) {
-				Alerts.addAlert("danger", 'Tasklist could not be cleared. [HTTP Status Code: ' + status + ']');
-			});
+			}
+			for (var i = 0; i < toClear.length; i++) {
+				service.removeTaskById(toClear[i].Id);
+			}
+
+			service.DefaultSortTasklist(service.tasklist);
+			if (callback) {
+				callback();
+			}
 		};
 
 		service.GetTask = function(id) {
@@ -204,28 +210,13 @@ todoapp.factory('API', ['$http', '$location', 'Alerts',
 			Alerts.addAlert("danger", 'Could not get Task. [Id: ' + id + ']');
 		};
 
-		service.LoadTask = function(id) {
-			$http.get('/api/task/' + id).success(function(task) {
-				service.task = task;
-			}).error(function(data, status, headers, config) {
-				service.task = null;
-				Alerts.addAlert("danger", 'Task could not be loaded. [HTTP Status Code: ' + status + ']');
-			});
-		};
-
 		service.AddTask = function(task, callback) {
-			$http.post('/api/task', service.dateValidation(task)).success(function(newTask) {
-				if (newTask.Id != 0) {
-					service.tasklist.push(newTask);
-					if (callback) {
-						callback();
-					}
-				} else {
-					Alerts.addAlert("danger", 'Task could not be added, since API did not return a correct Task.ID');
-				}
-			}).error(function(data, status, headers, config) {
-				Alerts.addAlert("danger", 'Task could not be added. [HTTP Status Code: ' + status + ']');
-			});
+			var newTask = service.dateValidation(task);
+			newTask.Id = service.nextTaskId();
+			service.tasklist.push(newTask);
+			if (callback) {
+				callback();
+			}
 		};
 
 		service.ToggleTaskCompletion = function(task) {
@@ -236,11 +227,7 @@ todoapp.factory('API', ['$http', '$location', 'Alerts',
 				task.CompletedDate = "0001-01-01T00:00:00Z"; // golang zero time
 			}
 
-			$http.put('/api/task/' + task.Id, service.dateValidation(task)).success(function() {
-				service.modifyTask(task);
-			}).error(function(data, status, headers, config) {
-				Alerts.addAlert("danger", 'Task completion status could not be switched: ' + status + ']');
-			});
+			service.modifyTask(service.dateValidation(task));
 		};
 
 		service.modifyTask = function(task) {
@@ -266,15 +253,10 @@ todoapp.factory('API', ['$http', '$location', 'Alerts',
 		};
 
 		service.UpdateTask = function(task, callback) {
-			task = service.dateValidation(task);
-			$http.put('/api/task/' + task.Id, task).success(function() {
-				service.modifyTask(task);
-				if (callback) {
-					callback();
-				}
-			}).error(function(data, status, headers, config) {
-				Alerts.addAlert("danger", 'Task could not be updated. [HTTP Status Code: ' + status + ']');
-			});
+			service.modifyTask(service.dateValidation(task));
+			if (callback) {
+				callback();
+			}
 		};
 
 		service.removeTaskById = function(taskId) {
@@ -287,15 +269,7 @@ todoapp.factory('API', ['$http', '$location', 'Alerts',
 		}
 
 		service.DeleteTask = function(task) {
-			$http.delete('/api/task/' + task.Id).success(function() {
-				//service.removeTaskById(task.Id);
-				// have to refresh tasklist from API after delete, because of possible Task.Id changes / ordering
-				service.LoadTasklist(function() {
-					$location.path("/");
-				});
-			}).error(function(data, status, headers, config) {
-				Alerts.addAlert("danger", 'Task could not be deleted. [HTTP Status Code: ' + status + ']');
-			});
+			service.removeTaskById(task.Id);
 		};
 
 		service.nextTaskId = function() {
@@ -309,7 +283,7 @@ todoapp.factory('API', ['$http', '$location', 'Alerts',
 		};
 
 		service.LoadConfig = function(callback) {
-			$http.get('http://jamesclonk.github.io/todoapp/demo/config.json').success(function(config) {
+			$http.get('config.json').success(function(config) {
 				service.config = config;
 				if (callback) {
 					callback();

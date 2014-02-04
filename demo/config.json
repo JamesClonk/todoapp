@@ -1,0 +1,13 @@
+{
+	"TodoTxtFilename": "todo.txt",
+	"DeleteWarning": true,
+	"ClearWarning": true,
+	"Colors": {
+		"PriorityA": "#cc0000",
+		"PriorityB": "#ee9900",
+		"PriorityC": "#eeee00",
+		"PriorityD": "#3366ff",
+		"PriorityE": "#33cc33",
+		"PriorityF": "#cccccc"
+	}
+}
